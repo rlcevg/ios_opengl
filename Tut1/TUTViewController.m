@@ -7,8 +7,9 @@
 //
 
 #import "TUTViewController.h"
-
-#define BUFFER_OFFSET(i) ((char *)NULL + (i))
+#import "VBOTeapot.h"
+#import "VBOFloor.h"
+#import "VBOTorus.h"
 
 // Uniform index.
 enum
@@ -27,62 +28,12 @@ enum
     NUM_ATTRIBUTES
 };
 
-GLfloat gCubeVertexData[216] = 
-{
-    // Data layout for each line below is:
-    // positionX, positionY, positionZ,     normalX, normalY, normalZ,
-    0.5f, -0.5f, -0.5f,        1.0f, 0.0f, 0.0f,
-    0.5f, 0.5f, -0.5f,         1.0f, 0.0f, 0.0f,
-    0.5f, -0.5f, 0.5f,         1.0f, 0.0f, 0.0f,
-    0.5f, -0.5f, 0.5f,         1.0f, 0.0f, 0.0f,
-    0.5f, 0.5f, -0.5f,          1.0f, 0.0f, 0.0f,
-    0.5f, 0.5f, 0.5f,         1.0f, 0.0f, 0.0f,
-    
-    0.5f, 0.5f, -0.5f,         0.0f, 1.0f, 0.0f,
-    -0.5f, 0.5f, -0.5f,        0.0f, 1.0f, 0.0f,
-    0.5f, 0.5f, 0.5f,          0.0f, 1.0f, 0.0f,
-    0.5f, 0.5f, 0.5f,          0.0f, 1.0f, 0.0f,
-    -0.5f, 0.5f, -0.5f,        0.0f, 1.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f,         0.0f, 1.0f, 0.0f,
-    
-    -0.5f, 0.5f, -0.5f,        -1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,       -1.0f, 0.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f,         -1.0f, 0.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f,         -1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,       -1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, 0.5f,        -1.0f, 0.0f, 0.0f,
-    
-    -0.5f, -0.5f, -0.5f,       0.0f, -1.0f, 0.0f,
-    0.5f, -0.5f, -0.5f,        0.0f, -1.0f, 0.0f,
-    -0.5f, -0.5f, 0.5f,        0.0f, -1.0f, 0.0f,
-    -0.5f, -0.5f, 0.5f,        0.0f, -1.0f, 0.0f,
-    0.5f, -0.5f, -0.5f,        0.0f, -1.0f, 0.0f,
-    0.5f, -0.5f, 0.5f,         0.0f, -1.0f, 0.0f,
-    
-    0.5f, 0.5f, 0.5f,          0.0f, 0.0f, 1.0f,
-    -0.5f, 0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
-    0.5f, -0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
-    0.5f, -0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
-    -0.5f, 0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
-    -0.5f, -0.5f, 0.5f,        0.0f, 0.0f, 1.0f,
-    
-    0.5f, -0.5f, -0.5f,        0.0f, 0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,       0.0f, 0.0f, -1.0f,
-    0.5f, 0.5f, -0.5f,         0.0f, 0.0f, -1.0f,
-    0.5f, 0.5f, -0.5f,         0.0f, 0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,       0.0f, 0.0f, -1.0f,
-    -0.5f, 0.5f, -0.5f,        0.0f, 0.0f, -1.0f
-};
-
 @interface TUTViewController () {
     GLuint _program;
     
     GLKMatrix4 _modelViewProjectionMatrix;
     GLKMatrix3 _normalMatrix;
     float _rotation;
-    
-    GLuint _vertexArray;
-    GLuint _vertexBuffer;
 }
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) GLKBaseEffect *effect;
@@ -94,6 +45,10 @@ GLfloat gCubeVertexData[216] =
 - (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file;
 - (BOOL)linkProgram:(GLuint)prog;
 - (BOOL)validateProgram:(GLuint)prog;
+
+@property (strong, nonatomic) VBOTeapot *teapot;
+@property (strong, nonatomic) VBOFloor *floor;
+@property (strong, nonatomic) VBOTorus *torus;
 @end
 
 @implementation TUTViewController
@@ -111,7 +66,8 @@ GLfloat gCubeVertexData[216] =
     GLKView *view = (GLKView *)self.view;
     view.context = self.context;
     view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
-    
+    self.preferredFramesPerSecond = 60;
+
     [self setupGL];
 }
 
@@ -145,36 +101,37 @@ GLfloat gCubeVertexData[216] =
 - (void)setupGL
 {
     [EAGLContext setCurrentContext:self.context];
-    
+
     [self loadShaders];
-    
+
     self.effect = [[GLKBaseEffect alloc] init];
     self.effect.light0.enabled = GL_TRUE;
     self.effect.light0.diffuseColor = GLKVector4Make(1.0f, 0.4f, 0.4f, 1.0f);
-    
+    self.effect.light0.ambientColor = GLKVector4Make(0.4f, 0.4f, 0.4f, 1.0f);
+    self.effect.light0.specularColor = GLKVector4Make(0.9f, 0.9f, 0.9f, 1.0f);
+    self.effect.light0.position = GLKVector4Make(0.0f, 0.0f, -15.0f, 1.0f);
+    self.effect.light0.constantAttenuation = 0.0;
+    self.effect.light0.linearAttenuation = 0.1;
+    self.effect.light0.quadraticAttenuation = 0.2;
+//    self.effect.lightModelTwoSided = GL_TRUE;
+    self.effect.lightingType = GLKLightingTypePerPixel;
+    self.effect.colorMaterialEnabled = GL_TRUE;
+    self.effect.constantColor = GLKVector4Make(0.2f, 0.2f, 0.9f, 1.0f);
+
     glEnable(GL_DEPTH_TEST);
-    
-    glGenVertexArraysOES(1, &_vertexArray);
-    glBindVertexArrayOES(_vertexArray);
-    
-    glGenBuffers(1, &_vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(gCubeVertexData), gCubeVertexData, GL_STATIC_DRAW);
-    
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(0));
-    glEnableVertexAttribArray(GLKVertexAttribNormal);
-    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(12));
-    
-    glBindVertexArrayOES(0);
+
+    self.teapot = [[VBOTeapot alloc] initWithGrid:10 andLidTransfrom:GLKMatrix4Identity];
+    self.floor = [VBOFloor new];
+    self.torus = [VBOTorus new];
+
+    ((GLKView *)self.view).drawableMultisample = GLKViewDrawableMultisample4X;
 }
 
 - (void)tearDownGL
 {
     [EAGLContext setCurrentContext:self.context];
     
-    glDeleteBuffers(1, &_vertexBuffer);
-    glDeleteVertexArraysOES(1, &_vertexArray);
+    self.teapot = nil;
     
     self.effect = nil;
     
@@ -193,7 +150,7 @@ GLfloat gCubeVertexData[216] =
     
     self.effect.transform.projectionMatrix = projectionMatrix;
     
-    GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
+    GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -16.0f);
     baseModelViewMatrix = GLKMatrix4Rotate(baseModelViewMatrix, _rotation, 0.0f, 1.0f, 0.0f);
     
     // Compute the model view matrix for the object rendered with GLKit
@@ -217,23 +174,34 @@ GLfloat gCubeVertexData[216] =
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
+    CFTimeInterval previousTimestamp = CFAbsoluteTimeGetCurrent();
+
     glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    glBindVertexArrayOES(_vertexArray);
     
     // Render the object with GLKit
     [self.effect prepareToDraw];
     
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    
+    [self.teapot render];
+    [self.floor render];
+    [self.torus render];
+
     // Render the object again with ES2
     glUseProgram(_program);
     
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
     
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+//    [self.teapot render];
+
+    // Do your OpenGL ES frame rendering here, as well as presenting the onscreen render buffer
+    CFTimeInterval frameDuration = CFAbsoluteTimeGetCurrent() - previousTimestamp;
+    static int frameCounter = 0;
+    if (frameCounter >= 20) {
+        self.labelFPS.text = [NSString stringWithFormat:@"%f", 1 / frameDuration];
+        frameCounter = 0;
+    }
+    frameCounter++;
 }
 
 #pragma mark -  OpenGL ES 2 shader compilation

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3E5B5B58171AC5C400DFFD87 /* VBOTeapot.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E5B5B57171AC5C400DFFD87 /* VBOTeapot.m */; };
+		3E5B5B5E171B07B600DFFD87 /* VBOFloor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E5B5B5D171B07B600DFFD87 /* VBOFloor.m */; };
+		3E5B5B62171B19F600DFFD87 /* VBOTorus.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E5B5B61171B19F600DFFD87 /* VBOTorus.m */; };
 		3E61F3121716D72900FA7C64 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E61F3111716D72900FA7C64 /* UIKit.framework */; };
 		3E61F3141716D72900FA7C64 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E61F3131716D72900FA7C64 /* Foundation.framework */; };
 		3E61F3161716D72900FA7C64 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E61F3151716D72900FA7C64 /* CoreGraphics.framework */; };
@@ -40,6 +43,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3E5B5B56171AC5C400DFFD87 /* VBOTeapot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VBOTeapot.h; sourceTree = "<group>"; };
+		3E5B5B57171AC5C400DFFD87 /* VBOTeapot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VBOTeapot.m; sourceTree = "<group>"; };
+		3E5B5B5C171B07B600DFFD87 /* VBOFloor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VBOFloor.h; sourceTree = "<group>"; };
+		3E5B5B5D171B07B600DFFD87 /* VBOFloor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VBOFloor.m; sourceTree = "<group>"; };
+		3E5B5B5F171B0B8900DFFD87 /* Utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
+		3E5B5B60171B19F600DFFD87 /* VBOTorus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VBOTorus.h; sourceTree = "<group>"; };
+		3E5B5B61171B19F600DFFD87 /* VBOTorus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VBOTorus.m; sourceTree = "<group>"; };
 		3E61F30E1716D72900FA7C64 /* Tut1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tut1.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E61F3111716D72900FA7C64 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		3E61F3131716D72900FA7C64 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -103,6 +113,7 @@
 				3E61F30F1716D72900FA7C64 /* Products */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 0;
 		};
 		3E61F30F1716D72900FA7C64 /* Products */ = {
 			isa = PBXGroup;
@@ -137,6 +148,13 @@
 				3E61F3341716D72900FA7C64 /* TUTViewController.h */,
 				3E61F3351716D72900FA7C64 /* TUTViewController.m */,
 				3E61F31C1716D72900FA7C64 /* Supporting Files */,
+				3E5B5B56171AC5C400DFFD87 /* VBOTeapot.h */,
+				3E5B5B57171AC5C400DFFD87 /* VBOTeapot.m */,
+				3E5B5B5C171B07B600DFFD87 /* VBOFloor.h */,
+				3E5B5B5D171B07B600DFFD87 /* VBOFloor.m */,
+				3E5B5B5F171B0B8900DFFD87 /* Utils.h */,
+				3E5B5B60171B19F600DFFD87 /* VBOTorus.h */,
+				3E5B5B61171B19F600DFFD87 /* VBOTorus.m */,
 			);
 			path = Tut1;
 			sourceTree = "<group>";
@@ -290,6 +308,9 @@
 				3E61F3221716D72900FA7C64 /* main.m in Sources */,
 				3E61F3261716D72900FA7C64 /* TUTAppDelegate.m in Sources */,
 				3E61F3361716D72900FA7C64 /* TUTViewController.m in Sources */,
+				3E5B5B58171AC5C400DFFD87 /* VBOTeapot.m in Sources */,
+				3E5B5B5E171B07B600DFFD87 /* VBOFloor.m in Sources */,
+				3E5B5B62171B19F600DFFD87 /* VBOTorus.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -402,6 +423,7 @@
 				GCC_PREFIX_HEADER = "Tut1/Tut1-Prefix.pch";
 				INFOPLIST_FILE = "Tut1/Tut1-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -413,6 +435,7 @@
 				GCC_PREFIX_HEADER = "Tut1/Tut1-Prefix.pch";
 				INFOPLIST_FILE = "Tut1/Tut1-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -470,6 +493,7 @@
 				3E61F3501716D72900FA7C64 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		3E61F3511716D72900FA7C64 /* Build configuration list for PBXNativeTarget "Tut1Tests" */ = {
 			isa = XCConfigurationList;
@@ -478,6 +502,7 @@
 				3E61F3531716D72900FA7C64 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

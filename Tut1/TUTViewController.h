@@ -10,5 +10,6 @@
 #import <GLKit/GLKit.h>
 
 @interface TUTViewController : GLKViewController
+@property (weak, nonatomic) IBOutlet UILabel *labelFPS;
 
 @end
