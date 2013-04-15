@@ -23,6 +23,7 @@ typedef struct {
     GLuint _handle[3];
     unsigned int _faces;
 }
+@property (strong, nonatomic) GLKTextureInfo *texture;
 
 @end
 
@@ -32,10 +33,10 @@ typedef struct {
 
 - (id)init
 {
-    return [self initWithXsize:20.0f zsize:20.0f xdivs:20 zdivs:20];
+    return [self initWithXsize:20.0f zsize:20.0f xdivs:20 zdivs:20 texture:@"texture1.jpg"];
 }
 
-- (id)initWithXsize:(float)xsize zsize:(float)zsize xdivs:(int)xdivs zdivs:(int)zdivs
+- (id)initWithXsize:(float)xsize zsize:(float)zsize xdivs:(int)xdivs zdivs:(int)zdivs texture:(NSString *)fileName
 {
     self = [super init];
 
@@ -104,8 +105,13 @@ typedef struct {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _handle[1]);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * xdivs * zdivs * sizeof(GLuint), el, GL_STATIC_DRAW);
         
+        glBindVertexArrayOES(0);
+
         free(vertices);
         free(el);
+
+        [self loadTexture:fileName];
+        [self prepareEffect];
     }
 
     return self;
@@ -113,8 +119,45 @@ typedef struct {
 
 - (void)dealloc
 {
+    self.effect = nil;
+    self.texture = nil;
+
 	glDeleteBuffers(3, _handle);
 	glDeleteVertexArraysOES(1, &_vaoHandle);
+}
+
+- (void)loadTexture:(NSString *)fileName
+{
+    NSError *error;
+    self.texture = [GLKTextureLoader textureWithCGImage:[UIImage imageNamed:fileName].CGImage
+                                                options:@{GLKTextureLoaderOriginBottomLeft : @YES}
+                                                  error:&error];
+    if (error) {
+        NSLog(@"Error loading texture from image: %@", error);
+    }
+}
+
+- (void)prepareEffect
+{
+    self.effect = [[GLKBaseEffect alloc] init];
+    self.effect.light0.enabled = GL_TRUE;
+    self.effect.light0.diffuseColor = GLKVector4Make(0.7f, 0.7f, 0.7f, 1.0f);
+    self.effect.light0.ambientColor = GLKVector4Make(0.2f, 0.2f, 0.2f, 1.0f);
+    self.effect.light0.specularColor = GLKVector4Make(0.9f, 0.9f, 0.9f, 1.0f);
+//    self.effect.light0.position = GLKVector4Make(0.0f, 0.0f, -15.0f, 1.0f);
+//    self.effect.light0.constantAttenuation = 0.0;
+//    self.effect.light0.linearAttenuation = 0.1;
+//    self.effect.light0.quadraticAttenuation = 0.2;
+    self.effect.lightModelTwoSided = GL_TRUE;
+//    self.effect.lightingType = GLKLightingTypePerPixel;
+//    self.effect.colorMaterialEnabled = GL_TRUE;
+//    self.effect.constantColor = GLKVector4Make(0.3f, 0.3f, 1.0f, 1.0f);
+//    self.effect.useConstantColor = GL_FALSE;
+    if (self.texture) {
+//        self.effect.texture2d0.envMode = GLKTextureEnvModeReplace;
+//        self.effect.texture2d0.target = GLKTextureTarget2D;
+        self.effect.texture2d0.name = self.texture.name;
+    }
 }
 
 - (void)render

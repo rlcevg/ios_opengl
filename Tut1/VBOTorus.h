@@ -7,10 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+@class GLKBaseEffect;
 
 @interface VBOTorus : NSObject
 
 - (id)initWithOuterRadius:(float)outerRadius innerRadius:(float)innerRadius nsides:(int) nsides nrings:(int) nrings;
+- (void)updateWithTime:(float)time;
 - (void)render;
+
+@property (strong, nonatomic) GLKBaseEffect *effect;
 
 @end

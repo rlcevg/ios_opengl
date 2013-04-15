@@ -7,10 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
+@class GLKBaseEffect;
+@class GLKTextureInfo;
 
 @interface VBOFloor : NSObject
 
-- (id)initWithXsize:(float)xsize zsize:(float)zsize xdivs:(int)xdivs zdivs:(int)zdivs;
+- (id)initWithXsize:(float)xsize zsize:(float)zsize xdivs:(int)xdivs zdivs:(int)zdivs texture:(NSString *)fileName;
 - (void)render;
+
+@property (strong, nonatomic, readonly) GLKTextureInfo *texture;
+@property (strong, nonatomic) GLKBaseEffect *effect;
 
 @end

@@ -36,7 +36,6 @@ enum
     float _rotation;
 }
 @property (strong, nonatomic) EAGLContext *context;
-@property (strong, nonatomic) GLKBaseEffect *effect;
 
 - (void)setupGL;
 - (void)tearDownGL;
@@ -104,20 +103,6 @@ enum
 
     [self loadShaders];
 
-    self.effect = [[GLKBaseEffect alloc] init];
-    self.effect.light0.enabled = GL_TRUE;
-    self.effect.light0.diffuseColor = GLKVector4Make(1.0f, 0.4f, 0.4f, 1.0f);
-    self.effect.light0.ambientColor = GLKVector4Make(0.4f, 0.4f, 0.4f, 1.0f);
-    self.effect.light0.specularColor = GLKVector4Make(0.9f, 0.9f, 0.9f, 1.0f);
-    self.effect.light0.position = GLKVector4Make(0.0f, 0.0f, -15.0f, 1.0f);
-    self.effect.light0.constantAttenuation = 0.0;
-    self.effect.light0.linearAttenuation = 0.1;
-    self.effect.light0.quadraticAttenuation = 0.2;
-//    self.effect.lightModelTwoSided = GL_TRUE;
-    self.effect.lightingType = GLKLightingTypePerPixel;
-    self.effect.colorMaterialEnabled = GL_TRUE;
-    self.effect.constantColor = GLKVector4Make(0.2f, 0.2f, 0.9f, 1.0f);
-
     glEnable(GL_DEPTH_TEST);
 
     self.teapot = [[VBOTeapot alloc] initWithGrid:10 andLidTransfrom:GLKMatrix4Identity];
@@ -130,11 +115,11 @@ enum
 - (void)tearDownGL
 {
     [EAGLContext setCurrentContext:self.context];
-    
+
     self.teapot = nil;
-    
-    self.effect = nil;
-    
+    self.floor = nil;
+    self.torus = nil;
+
     if (_program) {
         glDeleteProgram(_program);
         _program = 0;
@@ -148,8 +133,9 @@ enum
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
     
-    self.effect.transform.projectionMatrix = projectionMatrix;
-    
+    self.floor.effect.transform.projectionMatrix = projectionMatrix;
+    self.torus.effect.transform.projectionMatrix = projectionMatrix;
+
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -16.0f);
     baseModelViewMatrix = GLKMatrix4Rotate(baseModelViewMatrix, _rotation, 0.0f, 1.0f, 0.0f);
     
@@ -158,8 +144,9 @@ enum
     modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, _rotation, 1.0f, 1.0f, 1.0f);
     modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
     
-    self.effect.transform.modelviewMatrix = modelViewMatrix;
-    
+    self.floor.effect.transform.modelviewMatrix = modelViewMatrix;
+    self.torus.effect.transform.modelviewMatrix = modelViewMatrix;
+
     // Compute the model view matrix for the object rendered with ES2
     modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 1.5f);
     modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, _rotation, 1.0f, 1.0f, 1.0f);
@@ -170,6 +157,8 @@ enum
     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
     
     _rotation += self.timeSinceLastUpdate * 0.5f;
+
+    [self.torus updateWithTime:_rotation * 8];
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
@@ -180,10 +169,9 @@ enum
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     // Render the object with GLKit
-    [self.effect prepareToDraw];
-    
-    [self.teapot render];
+    [self.floor.effect prepareToDraw];
     [self.floor render];
+    [self.torus.effect prepareToDraw];
     [self.torus render];
 
     // Render the object again with ES2
@@ -192,7 +180,7 @@ enum
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
     
-//    [self.teapot render];
+    [self.teapot render];
 
     // Do your OpenGL ES frame rendering here, as well as presenting the onscreen render buffer
     CFTimeInterval frameDuration = CFAbsoluteTimeGetCurrent() - previousTimestamp;

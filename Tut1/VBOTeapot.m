@@ -237,12 +237,12 @@ void moveLid(int grid, GLfloat *v, GLKMatrix4 lidTransform);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _handle[3]);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * _faces * sizeof(GLuint), el, GL_STATIC_DRAW);
         
+        glBindVertexArrayOES(0);
+
         free(v);
         free(n);
         free(el);
         free(tc);
-
-        glBindVertexArrayOES(0);
     }
 
     return self;
