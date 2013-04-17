@@ -6,12 +6,13 @@
 //  Copyright (c) 2013 Evgenij. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <GLKit/GLKit.h>
+#import "Drawable.h"
 
-@interface VBOTeapot : NSObject
+@interface VBOTeapot : Drawable <Drawable>
 
 - (id)initWithGrid:(int)grid andLidTransfrom:(GLKMatrix4)lidTransform;
 - (void)render;
+
+@property (assign, nonatomic) GLKVector3 constantColor;
 
 @end

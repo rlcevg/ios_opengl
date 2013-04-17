@@ -39,14 +39,12 @@ void generateVertexData(Vertex *vertices, int sides, int rings,
 
 - (id)init
 {
-    return [self initWithOuterRadius:4.0 innerRadius:1.5 nsides:20 nrings:40];
+    return [self initWithOuterRadius:0.5 innerRadius:0.2 nsides:40 nrings:60];
 }
 
 - (id)initWithOuterRadius:(float)outerRadius innerRadius:(float)innerRadius nsides:(int) nsides nrings:(int) nrings
 {
-    self = [super init];
-
-    if (self) {
+    if (self = [super init]) {
         _sides = nsides;
         _rings = nrings;
         _outerRadius = outerRadius;
@@ -100,41 +98,18 @@ void generateVertexData(Vertex *vertices, int sides, int rings,
         free(c);
         free(tex);
         free(el);
-
-        [self prepareEffect];
     }
-
     return self;
 }
 
 - (void)dealloc
 {
-    self.effect = nil;
-
 	glDeleteBuffers(4, _handle);
 	glDeleteVertexArraysOES(1, &_vaoHandle);
 }
 
-- (void)prepareEffect
-{
-    self.effect = [[GLKBaseEffect alloc] init];
-    self.effect.light0.enabled = GL_TRUE;
-    self.effect.light0.diffuseColor = GLKVector4Make(0.7f, 0.7f, 0.7f, 1.0f);
-    self.effect.light0.ambientColor = GLKVector4Make(0.2f, 0.2f, 0.2f, 1.0f);
-    self.effect.light0.specularColor = GLKVector4Make(0.9f, 0.9f, 0.9f, 1.0f);
-//    self.effect.light0.position = GLKVector4Make(0.0f, 0.0f, -15.0f, 1.0f);
-//    self.effect.light0.constantAttenuation = 0.0;
-//    self.effect.light0.linearAttenuation = 0.1;
-//    self.effect.light0.quadraticAttenuation = 0.2;
-//    self.effect.lightModelTwoSided = GL_TRUE;
-//    self.effect.lightingType = GLKLightingTypePerPixel;
-    self.effect.colorMaterialEnabled = GL_TRUE;
-    self.effect.constantColor = GLKVector4Make(0.3f, 0.3f, 1.0f, 1.0f);
-}
-
 - (void)updateWithTime:(float)time
 {
-//    glBindVertexArrayOES(_vaoHandle);
     glBindBuffer(GL_ARRAY_BUFFER, _handle[0]);
     Vertex *vertices = (Vertex *)glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES);
     generateVertexData(vertices, _sides, _rings, _outerRadius, _innerRadius, time);
@@ -217,19 +192,20 @@ void generateVertexData(Vertex *vertices, int sides, int rings,
     float ringFactor = (float)(TWOPI / rings);
     float sideFactor = (float)(TWOPI / sides);
     Vertex *pVert = vertices;
+    float div = innerRadius / 3.0;
     for (int ring = 0; ring <= rings; ring++) {
         float u = ring * ringFactor;
         float cu = cosf(u);
         float su = sinf(u);
-        float tmp = innerRadius + sinf(5.0 * u + time) * (su + 0.5) / 2;
+        float deformedRadius = innerRadius + sinf(5.0 * u + time) * (su + 0.5) * div;
         for (int side = 0; side < sides; side++) {
             float v = side * sideFactor;
             float cv = cosf(v);
             float sv = sinf(v);
-            float r = (outerRadius + tmp * cv);
+            float r = (outerRadius + deformedRadius * cv);
             pVert->position.x = r * cu;
             pVert->position.y = r * su;
-            pVert->position.z = tmp * sv;
+            pVert->position.z = deformedRadius * sv;
             pVert->normal = GLKVector3Normalize(GLKVector3Make(cv * cu * r,
                                                                cv * su * r,
                                                                sv * r));

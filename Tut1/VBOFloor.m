@@ -33,14 +33,12 @@ typedef struct {
 
 - (id)init
 {
-    return [self initWithXsize:20.0f zsize:20.0f xdivs:20 zdivs:20 texture:@"texture1.jpg"];
+    return [self initWithXsize:20.0f zsize:20.0f xdivs:40 zdivs:40 texture:@"texture1.jpg"];
 }
 
 - (id)initWithXsize:(float)xsize zsize:(float)zsize xdivs:(int)xdivs zdivs:(int)zdivs texture:(NSString *)fileName
 {
-    self = [super init];
-
-    if (self) {
+    if (self = [super init]) {
         glGenVertexArraysOES(1, &_vaoHandle);
         glBindVertexArrayOES(_vaoHandle);
         _faces = xdivs * zdivs;
@@ -56,18 +54,18 @@ typedef struct {
         float texj = 1.0f / xdivs;
         float x, z;
         Vertex *pVert = vertices;
-        float c1 = 4 / x2, c2 = 4 / z2, c3 = 2;
+        float c1 = 5 / x2, c2 = 5 / z2, c3 = (xsize + zsize) / 20.0f;
         for (int i = 0; i <= zdivs; i++) {
             z = iFactor * i - z2;
             for (int j = 0; j <= xdivs; j++) {
                 x = jFactor * j - x2;
-                float sinVal = sinf(c1 * x), cosVal = cosf(c2 * z);
+                float sinVal = sinf(c1 * x + 4.5f), cosVal = cosf(c2 * z);
                 pVert->position.x = x;
                 pVert->position.y = sinVal * cosVal * c3;
                 pVert->position.z = z;
                 pVert->normal = GLKVector3Normalize(GLKVector3Make(
-                                    -c1 * c3 * cosVal * cosf(c1 * x),
-                                    1.0,
+                                    -c1 * c3 * cosVal * cosf(c1 * x + 4.5f),
+                                    1.0f,
                                     c2 * c3 * sinVal * sinf(c2 * z)));
                 pVert->tex.x = i * texi;
                 pVert->tex.y = j * texj;
@@ -78,8 +76,8 @@ typedef struct {
         unsigned int rowStart, nextRowStart;
         int idx = 0;
         for (int i = 0; i < zdivs; i++) {
-            rowStart = i * (xdivs+1);
-            nextRowStart = (i+1) * (xdivs+1);
+            rowStart = i * (xdivs + 1);
+            nextRowStart = (i + 1) * (xdivs + 1);
             for (int j = 0; j < xdivs; j++) {
                 el[idx] = rowStart + j;
                 el[idx+1] = nextRowStart + j;
@@ -111,15 +109,12 @@ typedef struct {
         free(el);
 
         [self loadTexture:fileName];
-        [self prepareEffect];
     }
-
     return self;
 }
 
 - (void)dealloc
 {
-    self.effect = nil;
     self.texture = nil;
 
 	glDeleteBuffers(3, _handle);
@@ -129,41 +124,18 @@ typedef struct {
 - (void)loadTexture:(NSString *)fileName
 {
     NSError *error;
+    NSDictionary *options = @{GLKTextureLoaderOriginBottomLeft : @YES};
     self.texture = [GLKTextureLoader textureWithCGImage:[UIImage imageNamed:fileName].CGImage
-                                                options:@{GLKTextureLoaderOriginBottomLeft : @YES}
+                                                options:options
                                                   error:&error];
     if (error) {
         NSLog(@"Error loading texture from image: %@", error);
     }
 }
 
-- (void)prepareEffect
-{
-    self.effect = [[GLKBaseEffect alloc] init];
-    self.effect.light0.enabled = GL_TRUE;
-    self.effect.light0.diffuseColor = GLKVector4Make(0.7f, 0.7f, 0.7f, 1.0f);
-    self.effect.light0.ambientColor = GLKVector4Make(0.2f, 0.2f, 0.2f, 1.0f);
-    self.effect.light0.specularColor = GLKVector4Make(0.9f, 0.9f, 0.9f, 1.0f);
-//    self.effect.light0.position = GLKVector4Make(0.0f, 0.0f, -15.0f, 1.0f);
-//    self.effect.light0.constantAttenuation = 0.0;
-//    self.effect.light0.linearAttenuation = 0.1;
-//    self.effect.light0.quadraticAttenuation = 0.2;
-    self.effect.lightModelTwoSided = GL_TRUE;
-//    self.effect.lightingType = GLKLightingTypePerPixel;
-//    self.effect.colorMaterialEnabled = GL_TRUE;
-//    self.effect.constantColor = GLKVector4Make(0.3f, 0.3f, 1.0f, 1.0f);
-//    self.effect.useConstantColor = GL_FALSE;
-    if (self.texture) {
-//        self.effect.texture2d0.envMode = GLKTextureEnvModeReplace;
-//        self.effect.texture2d0.target = GLKTextureTarget2D;
-        self.effect.texture2d0.name = self.texture.name;
-    }
-}
-
 - (void)render
 {
     glBindVertexArrayOES(_vaoHandle);
-    glVertexAttrib3f(1, 0.0f, 1.0f, 0.0f);  // Constant normal for all verts
     glDrawElements(GL_TRIANGLES, 6 * _faces, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
 }
 

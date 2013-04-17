@@ -6,23 +6,31 @@
 //  Copyright (c) 2013 Evgenij. All rights reserved.
 //
 
-attribute vec4 position;
-attribute vec3 normal;
+#version 100
 
-varying lowp vec4 colorVarying;
+attribute vec4 positionVertex;
+attribute vec3 normalVertex;
+attribute vec4 colorVertex;
+attribute vec2 texCoordVertex;
 
-uniform mat4 modelViewProjectionMatrix;
+varying vec3 position;
+varying vec3 normal;
+varying vec4 color;
+varying vec2 texCoord;
+varying vec4 shadowCoord;
+
+uniform mat4 modelviewMatrix;
 uniform mat3 normalMatrix;
+uniform mat4 shadowMatrix;
+uniform mat4 modelViewProjectionMatrix;
 
 void main()
 {
-    vec3 eyeNormal = normalize(normalMatrix * normal);
-    vec3 lightPosition = vec3(0.0, 0.0, 1.0);
-    vec4 diffuseColor = vec4(0.4, 0.4, 1.0, 1.0);
-    
-    float nDotVP = max(0.0, dot(eyeNormal, normalize(lightPosition)));
-                 
-    colorVarying = diffuseColor * nDotVP;
-    
-    gl_Position = modelViewProjectionMatrix * position;
+    position = (modelviewMatrix * positionVertex).xyz;
+    normal = normalize(normalMatrix * normalVertex);
+    shadowCoord = shadowMatrix * positionVertex;
+    color = colorVertex;
+    texCoord = texCoordVertex;
+
+    gl_Position = modelViewProjectionMatrix * positionVertex;
 }

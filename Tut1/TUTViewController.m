@@ -10,29 +10,17 @@
 #import "VBOTeapot.h"
 #import "VBOFloor.h"
 #import "VBOTorus.h"
+#import "Camera.h"
+#import "Light.h"
+#import "FBOShadow.h"
+#import "SceneEffect.h"
+#import "GLSLProgram.h"
 
-// Uniform index.
-enum
-{
-    UNIFORM_MODELVIEWPROJECTION_MATRIX,
-    UNIFORM_NORMAL_MATRIX,
-    NUM_UNIFORMS
-};
-GLint uniforms[NUM_UNIFORMS];
-
-// Attribute index.
-enum
-{
-    ATTRIB_VERTEX,
-    ATTRIB_NORMAL,
-    NUM_ATTRIBUTES
-};
+#pragma mark
 
 @interface TUTViewController () {
-    GLuint _program;
-    
-    GLKMatrix4 _modelViewProjectionMatrix;
-    GLKMatrix3 _normalMatrix;
+    GLuint _vertexArray, _vertexBuffer;
+    GLSLProgram *prog;
     float _rotation;
 }
 @property (strong, nonatomic) EAGLContext *context;
@@ -40,15 +28,18 @@ enum
 - (void)setupGL;
 - (void)tearDownGL;
 
-- (BOOL)loadShaders;
-- (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file;
-- (BOOL)linkProgram:(GLuint)prog;
-- (BOOL)validateProgram:(GLuint)prog;
-
+@property (strong, nonatomic) GLKBaseEffect *effect;
 @property (strong, nonatomic) VBOTeapot *teapot;
 @property (strong, nonatomic) VBOFloor *floor;
 @property (strong, nonatomic) VBOTorus *torus;
+@property (strong, nonatomic) FBOShadow *shadow;
+@property (strong, nonatomic) Camera *camera;
+@property (strong, nonatomic) Light *light;
+@property (strong, nonatomic) SceneEffect *sceneEffect;
+
 @end
+
+#pragma mark
 
 @implementation TUTViewController
 
@@ -101,29 +92,135 @@ enum
 {
     [EAGLContext setCurrentContext:self.context];
 
-    [self loadShaders];
+#ifdef DEBUG
+    NSString *extensionString = [NSString stringWithUTF8String:(char *)glGetString(GL_EXTENSIONS)];
+    NSArray *extensions = [extensionString componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    for (NSString *oneExtension in extensions)
+        NSLog(@"%@", oneExtension);
+#endif
 
-    glEnable(GL_DEPTH_TEST);
+    self.effect = [[GLKBaseEffect alloc] init];
+//    self.effect.light0.enabled = GL_TRUE;
+//    self.effect.light0.diffuseColor = GLKVector4Make(0.7f, 0.7f, 0.7f, 1.0f);
+//    self.effect.light0.ambientColor = GLKVector4Make(0.2f, 0.2f, 0.2f, 1.0f);
+//    self.effect.light0.specularColor = GLKVector4Make(0.9f, 0.9f, 0.9f, 1.0f);
+////    self.effect.light0.position = GLKVector4Make(0.0f, 0.0f, -15.0f, 1.0f);
+////    self.effect.light0.constantAttenuation = 0.0;
+////    self.effect.light0.linearAttenuation = 0.1;
+////    self.effect.light0.quadraticAttenuation = 0.2;
+//    self.effect.lightModelTwoSided = GL_TRUE;
+////    self.effect.lightingType = GLKLightingTypePerPixel;
+////    self.effect.colorMaterialEnabled = GL_TRUE;
+////    self.effect.constantColor = GLKVector4Make(0.3f, 0.3f, 1.0f, 1.0f);
+////    self.effect.useConstantColor = GL_FALSE;
+//    if (self.texture) {
+////        self.effect.texture2d0.envMode = GLKTextureEnvModeReplace;
+////        self.effect.texture2d0.target = GLKTextureTarget2D;
+//        self.effect.texture2d0.name = self.texture.name;
+//    }
 
-    self.teapot = [[VBOTeapot alloc] initWithGrid:10 andLidTransfrom:GLKMatrix4Identity];
+    self.sceneEffect = [SceneEffect new];
+//    self.light = [[Light alloc] initWithPosition:GLKVector4Make(-3.0f, 7.0f, 5.0f, 1.0f)
+//                                          center:GLKVector3Make(0.0f, 0.0f, 0.0f)
+//                                              up:GLKVector3Make(0.0f, 1.0f, 0.0f)
+//                                            fovy:GLKMathDegreesToRadians(50.0f)
+//                                          aspect:1.0f nearZ:10.0f farZ:25.0f
+//                                       intensity:GLKVector3Make(1.0f, 1.0f, 1.0f)];
+    self.light = [[Light alloc] initWithPosition:GLKVector4Make(-1.0f, 7.0f, 5.0f, 1.0f)
+                                          center:GLKVector3Make(0.0f, 0.0f, 0.0f)
+                                              up:GLKVector3Make(0.0f, 1.0f, 0.0f)
+                                            fovy:GLKMathDegreesToRadians(65.0f)
+                                          aspect:fabsf(self.view.bounds.size.width / self.view.bounds.size.height) nearZ:0.1f farZ:50.0f
+                                       intensity:GLKVector3Make(1.0f, 1.0f, 1.0f)];
+
+    MaterialInfo material = {
+        .Ke=GLKVector3Make(0.0f, 0.0f, 0.0f),
+        .Ka=GLKVector3Make(0.035f, 0.025f, 0.015f),
+        .Kd=GLKVector3Make(0.9f, 0.7f, 0.5f),
+        .Ks=GLKVector3Make(1.5f, 1.5f, 1.5f),
+        .shininess=150.0f
+    };
+    self.teapot = [[VBOTeapot alloc] initWithGrid:14 andLidTransfrom:GLKMatrix4Identity];
+    self.teapot.material = material;
+    self.teapot.constantColor = GLKVector3Make(0.7f, 0.8f, 0.2f);
     self.floor = [VBOFloor new];
+    material.Ks = GLKVector3Make(0.2f, 0.2f, 0.2f);
+    material.shininess = 10.0f;
+    self.floor.material = material;
+// TODO: remove constantColor and add texture for floor
+self.floor.constantColor = GLKVector3Make(0.5f, 0.5f, 0.5f);
     self.torus = [VBOTorus new];
+    material.Ks = GLKVector3Make(5.5f, 7.5f, 9.5f);
+    material.Ke = GLKVector3Make(0.1f, 0.1f, 0.3f);
+    material.shininess = 100.0f;
+    self.torus.material = material;
+
+    self.shadow = [FBOShadow new];
+
+    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
+    self.camera = [[Camera alloc] initWithEye:GLKVector3Make(-1.0f, 7.0f, 5.0f)
+                                       center:GLKVector3Make(0.0f, 0.0f, 0.0f)
+                                           up:GLKVector3Make(0.0f, 1.0f, 0.0f)
+                                         fovy:GLKMathDegreesToRadians(65.0f) aspect:aspect
+                                        nearZ:0.1f farZ:50.0f];
+
+    glClearColor(0.35f, 0.65f, 0.95f, 1.0f);
+    glPolygonOffset(1.1, 4.0);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 
     ((GLKView *)self.view).drawableMultisample = GLKViewDrawableMultisample4X;
+
+
+#pragma mark - Debug
+
+    typedef struct {
+        GLKVector3 vert;
+        GLKVector2 tex;
+    } dataDebug;
+    static dataDebug data[4] = {
+        {{-1.0, -1.0, 0.0}, {0.0, 0.0}},
+        {{1.0, -1.0, 0.0}, {1.0, 0.0}},
+        {{-1.0, 1.0, 0.0}, {0.0, 1.0}},
+        {{1.0, 1.0, 0.0}, {1.0, 1.0}}
+    };
+    glGenVertexArraysOES(1, &_vertexArray);
+    glBindVertexArrayOES(_vertexArray);
+
+    glGenBuffers(1, &_vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(dataDebug), offsetof(dataDebug, vert));
+    glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(dataDebug), offsetof(dataDebug, tex));
+    NSLog(@"%x", glGetError());
+
+    glBindVertexArrayOES(0);
+    prog = [GLSLProgram new];
+    if (![prog loadShaders:@"Debug"]) {
+        [prog printLog];
+    }
 }
 
 - (void)tearDownGL
 {
     [EAGLContext setCurrentContext:self.context];
 
+    self.effect = nil;
+    self.camera = nil;
+    self.light = nil;
+
     self.teapot = nil;
     self.floor = nil;
     self.torus = nil;
 
-    if (_program) {
-        glDeleteProgram(_program);
-        _program = 0;
-    }
+    self.shadow = nil;
+    self.sceneEffect = nil;
+
+    glDeleteBuffers(1, &_vertexBuffer);
+    glDeleteVertexArraysOES(1, &_vertexArray);
 }
 
 #pragma mark - GLKView and GLKViewController delegate methods
@@ -131,217 +228,98 @@ enum
 - (void)update
 {
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
-    
-    self.floor.effect.transform.projectionMatrix = projectionMatrix;
-    self.torus.effect.transform.projectionMatrix = projectionMatrix;
+    self.camera.aspect = aspect;
 
-    GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -16.0f);
-    baseModelViewMatrix = GLKMatrix4Rotate(baseModelViewMatrix, _rotation, 0.0f, 1.0f, 0.0f);
-    
     // Compute the model view matrix for the object rendered with GLKit
-    GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -1.5f);
-    modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, _rotation, 1.0f, 1.0f, 1.0f);
-    modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
-    
-    self.floor.effect.transform.modelviewMatrix = modelViewMatrix;
-    self.torus.effect.transform.modelviewMatrix = modelViewMatrix;
+    GLKMatrix4 modelMatrix = GLKMatrix4Identity;
+    self.floor.modelMatrix = modelMatrix;
+
+    modelMatrix = GLKMatrix4MakeTranslation(-2.0f, 4.0f, 2.0f);
+    modelMatrix = GLKMatrix4Rotate(modelMatrix, _rotation, 1.0f, 1.0f, 1.0f);
+    self.torus.modelMatrix = modelMatrix;
 
     // Compute the model view matrix for the object rendered with ES2
-    modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 1.5f);
-    modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, _rotation, 1.0f, 1.0f, 1.0f);
-    modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
-    
-    _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
-    
-    _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
-    
+    modelMatrix = GLKMatrix4MakeTranslation(2.0f, 0.0f, -2.0f);
+    modelMatrix = GLKMatrix4RotateY(modelMatrix, _rotation);
+    modelMatrix = GLKMatrix4RotateX(modelMatrix, GLKMathDegreesToRadians(-90.0f));
+    self.teapot.modelMatrix = modelMatrix;
+
     _rotation += self.timeSinceLastUpdate * 0.5f;
 
-    [self.torus updateWithTime:_rotation * 8];
+    [self.torus updateWithTime:_rotation * 10];
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
     CFTimeInterval previousTimestamp = CFAbsoluteTimeGetCurrent();
 
-    glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    // Render the object with GLKit
-    [self.floor.effect prepareToDraw];
-    [self.floor render];
-    [self.torus.effect prepareToDraw];
-    [self.torus render];
+    // Pass 1 (shadow map generation)
+//    self.shadow.light = self.light;
+//    self.shadow.enabled = YES;
+//    [self renderWith:self.shadow];
+//    self.shadow.enabled = NO;
+//    [(GLKView *)self.view bindDrawable];
 
-    // Render the object again with ES2
-    glUseProgram(_program);
-    
-    glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
-    glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
-    
-    [self.teapot render];
+
+    glBindFramebuffer(GL_FRAMEBUFFER, self.shadow.handle);
+    // Debug
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glCullFace(GL_BACK);
+    self.sceneEffect.light = self.light;
+    self.sceneEffect.camera = self.camera;
+    [self renderWith:self.sceneEffect];
+
+    [(GLKView *)self.view bindDrawable];
+    GLsizei width = [[self view] bounds].size.width;
+    GLsizei height = [[self view] bounds].size.height;
+//    glViewport(0, 0, width, height);
+//    self.effect.texture2d0.enabled = YES;
+//    self.effect.transform.projectionMatrix = GLKMatrix4Identity;
+//    self.effect.transform.modelviewMatrix = GLKMatrix4Identity;
+//    [self.effect prepareToDraw];
+    [prog use];
+    [prog setUniform:"modelViewProjectionMatrix" mat4:GLKMatrix4Identity];
+    glBindTexture(GL_TEXTURE_2D, self.shadow.colorTex);
+    glDisable(GL_CULL_FACE);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glBindVertexArrayOES(_vertexArray);
+    glVertexAttrib3f(GLKVertexAttribColor, 1.0, 1.0, 1.0);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+
+    // Pass 2 (render)
+//    GLsizei width = [[self view] bounds].size.width;
+//    GLsizei height = [[self view] bounds].size.height;
+//    glViewport(0, 0, width, height);
+//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//    glCullFace(GL_BACK);
+//    self.sceneEffect.light = self.light;
+//    self.sceneEffect.camera = self.camera;
+//    [self renderWith:self.sceneEffect];
+
+//    glUseProgram(0);
 
     // Do your OpenGL ES frame rendering here, as well as presenting the onscreen render buffer
     CFTimeInterval frameDuration = CFAbsoluteTimeGetCurrent() - previousTimestamp;
-    static int frameCounter = 0;
-    if (frameCounter >= 20) {
+    if (self.framesDisplayed % 20 == 0) {
         self.labelFPS.text = [NSString stringWithFormat:@"%f", 1 / frameDuration];
-        frameCounter = 0;
     }
-    frameCounter++;
+    self.labelFPS2.text = [NSString stringWithFormat:@"%d", self.framesPerSecond];
 }
 
-#pragma mark -  OpenGL ES 2 shader compilation
-
-- (BOOL)loadShaders
+- (void)renderWith:(id<Effect>)effect
 {
-    GLuint vertShader, fragShader;
-    NSString *vertShaderPathname, *fragShaderPathname;
-    
-    // Create shader program.
-    _program = glCreateProgram();
-    
-    // Create and compile vertex shader.
-    vertShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"vsh"];
-    if (![self compileShader:&vertShader type:GL_VERTEX_SHADER file:vertShaderPathname]) {
-        NSLog(@"Failed to compile vertex shader");
-        return NO;
-    }
-    
-    // Create and compile fragment shader.
-    fragShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"fsh"];
-    if (![self compileShader:&fragShader type:GL_FRAGMENT_SHADER file:fragShaderPathname]) {
-        NSLog(@"Failed to compile fragment shader");
-        return NO;
-    }
-    
-    // Attach vertex shader to program.
-    glAttachShader(_program, vertShader);
-    
-    // Attach fragment shader to program.
-    glAttachShader(_program, fragShader);
-    
-    // Bind attribute locations.
-    // This needs to be done prior to linking.
-    glBindAttribLocation(_program, GLKVertexAttribPosition, "position");
-    glBindAttribLocation(_program, GLKVertexAttribNormal, "normal");
-    
-    // Link program.
-    if (![self linkProgram:_program]) {
-        NSLog(@"Failed to link program: %d", _program);
-        
-        if (vertShader) {
-            glDeleteShader(vertShader);
-            vertShader = 0;
-        }
-        if (fragShader) {
-            glDeleteShader(fragShader);
-            fragShader = 0;
-        }
-        if (_program) {
-            glDeleteProgram(_program);
-            _program = 0;
-        }
-        
-        return NO;
-    }
-    
-    // Get uniform locations.
-    uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
-    uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program, "normalMatrix");
-    
-    // Release vertex and fragment shaders.
-    if (vertShader) {
-        glDetachShader(_program, vertShader);
-        glDeleteShader(vertShader);
-    }
-    if (fragShader) {
-        glDetachShader(_program, fragShader);
-        glDeleteShader(fragShader);
-    }
-    
-    return YES;
+    [effect prepareToDraw:self.floor];
+    [self.floor render];
+    [effect prepareToDraw:self.torus];
+    [self.torus render];
+    [effect prepareToDraw:self.teapot];
+    [self.teapot render];
 }
 
-- (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file
+- (IBAction)handleTap:(UITapGestureRecognizer *)sender
 {
-    GLint status;
-    const GLchar *source;
-    
-    source = (GLchar *)[[NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil] UTF8String];
-    if (!source) {
-        NSLog(@"Failed to load vertex shader");
-        return NO;
-    }
-    
-    *shader = glCreateShader(type);
-    glShaderSource(*shader, 1, &source, NULL);
-    glCompileShader(*shader);
-    
-#if defined(DEBUG)
-    GLint logLength;
-    glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength);
-    if (logLength > 0) {
-        GLchar *log = (GLchar *)malloc(logLength);
-        glGetShaderInfoLog(*shader, logLength, &logLength, log);
-        NSLog(@"Shader compile log:\n%s", log);
-        free(log);
-    }
-#endif
-    
-    glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
-    if (status == 0) {
-        glDeleteShader(*shader);
-        return NO;
-    }
-    
-    return YES;
-}
-
-- (BOOL)linkProgram:(GLuint)prog
-{
-    GLint status;
-    glLinkProgram(prog);
-    
-#if defined(DEBUG)
-    GLint logLength;
-    glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
-    if (logLength > 0) {
-        GLchar *log = (GLchar *)malloc(logLength);
-        glGetProgramInfoLog(prog, logLength, &logLength, log);
-        NSLog(@"Program link log:\n%s", log);
-        free(log);
-    }
-#endif
-    
-    glGetProgramiv(prog, GL_LINK_STATUS, &status);
-    if (status == 0) {
-        return NO;
-    }
-    
-    return YES;
-}
-
-- (BOOL)validateProgram:(GLuint)prog
-{
-    GLint logLength, status;
-    
-    glValidateProgram(prog);
-    glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
-    if (logLength > 0) {
-        GLchar *log = (GLchar *)malloc(logLength);
-        glGetProgramInfoLog(prog, logLength, &logLength, log);
-        NSLog(@"Program validate log:\n%s", log);
-        free(log);
-    }
-    
-    glGetProgramiv(prog, GL_VALIDATE_STATUS, &status);
-    if (status == 0) {
-        return NO;
-    }
-    
-    return YES;
+    self.paused = !self.paused;
 }
 
 @end

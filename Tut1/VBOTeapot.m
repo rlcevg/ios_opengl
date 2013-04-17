@@ -201,9 +201,7 @@ void moveLid(int grid, GLfloat *v, GLKMatrix4 lidTransform);
 
 - (id)initWithGrid:(int)grid andLidTransfrom:(GLKMatrix4)lidTransform
 {
-    self = [super init];
-    
-    if (self) {
+    if (self = [super init]) {
         int verts = 32 * (grid + 1) * (grid + 1);
         _faces = grid * grid * 32;
         GLfloat *v = (GLfloat *)malloc(sizeof(GLfloat) * verts * 3);
@@ -244,7 +242,6 @@ void moveLid(int grid, GLfloat *v, GLKMatrix4 lidTransform);
         free(el);
         free(tc);
     }
-
     return self;
 }
 
@@ -466,8 +463,8 @@ GLKVector3 evaluate(int gridU, int gridV, float *B, GLKVector3 patch[][4])
 
 GLKVector3 evaluateNormal(int gridU, int gridV, float *B, float *dB, GLKVector3 patch[][4])
 {
-    GLKVector3 du = {0.0f,0.0f,0.0f};
-    GLKVector3 dv = {0.0f,0.0f,0.0f};
+    GLKVector3 du = {0.0f, 0.0f, 0.0f};
+    GLKVector3 dv = {0.0f, 0.0f, 0.0f};
 
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {

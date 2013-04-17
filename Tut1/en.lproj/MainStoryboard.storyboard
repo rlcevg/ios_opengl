@@ -17,36 +17,63 @@
                                     <accessibilityTraits key="traits" none="YES" updatesFrequently="YES"/>
                                 </accessibility>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="0.0" green="1" blue="0.032178035061964039" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="FPS:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wId-d0-pBC">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="fps1:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wId-d0-pBC">
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" none="YES" staticText="YES" notEnabled="YES"/>
                                 </accessibility>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="42" id="bTW-oa-Sf7"/>
-                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="fps2:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pay-pm-W32">
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R8B-Oo-cGf">
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="1" blue="0.032178035061964039" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
                         <constraints>
+                            <constraint firstAttribute="trailing" secondItem="R8B-Oo-cGf" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="LXZ-n1-Ovc"/>
+                            <constraint firstItem="R8B-Oo-cGf" firstAttribute="baseline" secondItem="Pay-pm-W32" secondAttribute="baseline" type="default" id="Nok-Sm-x5N"/>
                             <constraint firstItem="tli-mE-3iS" firstAttribute="leading" secondItem="wId-d0-pBC" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="cVe-5g-gJY"/>
+                            <constraint firstItem="R8B-Oo-cGf" firstAttribute="leading" secondItem="Pay-pm-W32" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="dVg-mX-MfO"/>
                             <constraint firstAttribute="trailing" secondItem="tli-mE-3iS" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="e1D-6U-EFo"/>
+                            <constraint firstItem="Pay-pm-W32" firstAttribute="top" secondItem="wId-d0-pBC" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="ghA-cd-0d1"/>
                             <constraint firstItem="wId-d0-pBC" firstAttribute="top" secondItem="3" secondAttribute="top" constant="20" symbolic="YES" type="default" id="h5a-wb-rRr"/>
                             <constraint firstItem="tli-mE-3iS" firstAttribute="top" secondItem="3" secondAttribute="top" constant="20" symbolic="YES" type="default" id="oeT-4g-7Nt"/>
                         </constraints>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="gLl-Jn-GNn" appends="YES" id="sqI-48-Dik"/>
+                            <outletCollection property="gestureRecognizers" destination="6cP-Fr-lE8" appends="YES" id="U9h-ur-6e0"/>
+                            <outletCollection property="gestureRecognizers" destination="5DF-hC-ZOJ" appends="YES" id="47D-s1-One"/>
+                            <outletCollection property="gestureRecognizers" destination="3b6-TI-0mv" appends="YES" id="jdT-2r-zMt"/>
+                        </connections>
                     </view>
                     <connections>
                         <outlet property="labelFPS" destination="tli-mE-3iS" id="kEu-ic-hRH"/>
+                        <outlet property="labelFPS2" destination="R8B-Oo-cGf" id="7LK-p0-inc"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
+                <panGestureRecognizer minimumNumberOfTouches="1" id="gLl-Jn-GNn"/>
+                <pinchGestureRecognizer id="5DF-hC-ZOJ"/>
+                <swipeGestureRecognizer direction="right" id="3b6-TI-0mv"/>
+                <tapGestureRecognizer id="6cP-Fr-lE8">
+                    <connections>
+                        <action selector="handleTap:" destination="2" id="r14-Iz-JYB"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-331" y="158"/>
+            <point key="canvasLocation" x="-238" y="196"/>
         </scene>
     </scenes>
     <classes>
@@ -56,7 +83,9 @@
         <class className="TUTViewController" superclassName="GLKViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/TUTViewController.h"/>
             <relationships>
+                <relationship kind="action" name="handleTap:" candidateClass="UITapGestureRecognizer"/>
                 <relationship kind="outlet" name="labelFPS" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="labelFPS2" candidateClass="UILabel"/>
             </relationships>
         </class>
     </classes>

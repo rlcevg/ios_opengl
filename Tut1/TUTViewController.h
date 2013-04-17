@@ -11,5 +11,7 @@
 
 @interface TUTViewController : GLKViewController
 @property (weak, nonatomic) IBOutlet UILabel *labelFPS;
+@property (weak, nonatomic) IBOutlet UILabel *labelFPS2;
+- (IBAction)handleTap:(UITapGestureRecognizer *)sender;
 
 @end
