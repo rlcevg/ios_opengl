@@ -28,7 +28,6 @@
 - (void)setupGL;
 - (void)tearDownGL;
 
-@property (strong, nonatomic) GLKBaseEffect *effect;
 @property (strong, nonatomic) VBOTeapot *teapot;
 @property (strong, nonatomic) VBOFloor *floor;
 @property (strong, nonatomic) VBOTorus *torus;
@@ -99,38 +98,12 @@
         NSLog(@"%@", oneExtension);
 #endif
 
-    self.effect = [[GLKBaseEffect alloc] init];
-//    self.effect.light0.enabled = GL_TRUE;
-//    self.effect.light0.diffuseColor = GLKVector4Make(0.7f, 0.7f, 0.7f, 1.0f);
-//    self.effect.light0.ambientColor = GLKVector4Make(0.2f, 0.2f, 0.2f, 1.0f);
-//    self.effect.light0.specularColor = GLKVector4Make(0.9f, 0.9f, 0.9f, 1.0f);
-////    self.effect.light0.position = GLKVector4Make(0.0f, 0.0f, -15.0f, 1.0f);
-////    self.effect.light0.constantAttenuation = 0.0;
-////    self.effect.light0.linearAttenuation = 0.1;
-////    self.effect.light0.quadraticAttenuation = 0.2;
-//    self.effect.lightModelTwoSided = GL_TRUE;
-////    self.effect.lightingType = GLKLightingTypePerPixel;
-////    self.effect.colorMaterialEnabled = GL_TRUE;
-////    self.effect.constantColor = GLKVector4Make(0.3f, 0.3f, 1.0f, 1.0f);
-////    self.effect.useConstantColor = GL_FALSE;
-//    if (self.texture) {
-////        self.effect.texture2d0.envMode = GLKTextureEnvModeReplace;
-////        self.effect.texture2d0.target = GLKTextureTarget2D;
-//        self.effect.texture2d0.name = self.texture.name;
-//    }
-
     self.sceneEffect = [SceneEffect new];
-//    self.light = [[Light alloc] initWithPosition:GLKVector4Make(-3.0f, 7.0f, 5.0f, 1.0f)
-//                                          center:GLKVector3Make(0.0f, 0.0f, 0.0f)
-//                                              up:GLKVector3Make(0.0f, 1.0f, 0.0f)
-//                                            fovy:GLKMathDegreesToRadians(50.0f)
-//                                          aspect:1.0f nearZ:10.0f farZ:25.0f
-//                                       intensity:GLKVector3Make(1.0f, 1.0f, 1.0f)];
-    self.light = [[Light alloc] initWithPosition:GLKVector4Make(-1.0f, 7.0f, 5.0f, 1.0f)
+    self.light = [[Light alloc] initWithPosition:GLKVector4Make(-4.0f, 7.0f, 4.0f, 1.0f)
                                           center:GLKVector3Make(0.0f, 0.0f, 0.0f)
                                               up:GLKVector3Make(0.0f, 1.0f, 0.0f)
                                             fovy:GLKMathDegreesToRadians(65.0f)
-                                          aspect:fabsf(self.view.bounds.size.width / self.view.bounds.size.height) nearZ:0.1f farZ:50.0f
+                                          aspect:1.0f nearZ:1.0f farZ:20.0f
                                        intensity:GLKVector3Make(1.0f, 1.0f, 1.0f)];
 
     MaterialInfo material = {
@@ -165,7 +138,7 @@ self.floor.constantColor = GLKVector3Make(0.5f, 0.5f, 0.5f);
                                         nearZ:0.1f farZ:50.0f];
 
     glClearColor(0.35f, 0.65f, 0.95f, 1.0f);
-    glPolygonOffset(1.1, 4.0);
+    glPolygonOffset(1.0, 1.0);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
@@ -208,7 +181,6 @@ self.floor.constantColor = GLKVector3Make(0.5f, 0.5f, 0.5f);
 {
     [EAGLContext setCurrentContext:self.context];
 
-    self.effect = nil;
     self.camera = nil;
     self.light = nil;
 
@@ -254,43 +226,22 @@ self.floor.constantColor = GLKVector3Make(0.5f, 0.5f, 0.5f);
     CFTimeInterval previousTimestamp = CFAbsoluteTimeGetCurrent();
 
     // Pass 1 (shadow map generation)
-//    self.shadow.light = self.light;
-//    self.shadow.enabled = YES;
-//    [self renderWith:self.shadow];
-//    self.shadow.enabled = NO;
-//    [(GLKView *)self.view bindDrawable];
-
-
-    glBindFramebuffer(GL_FRAMEBUFFER, self.shadow.handle);
-    // Debug
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glCullFace(GL_BACK);
-    self.sceneEffect.light = self.light;
-    self.sceneEffect.camera = self.camera;
-    [self renderWith:self.sceneEffect];
-
+    self.shadow.light = self.light;
+    self.shadow.enabled = YES;
+    [self renderWith:self.shadow];
+    self.shadow.enabled = NO;
     [(GLKView *)self.view bindDrawable];
-    GLsizei width = [[self view] bounds].size.width;
-    GLsizei height = [[self view] bounds].size.height;
-//    glViewport(0, 0, width, height);
-//    self.effect.texture2d0.enabled = YES;
-//    self.effect.transform.projectionMatrix = GLKMatrix4Identity;
-//    self.effect.transform.modelviewMatrix = GLKMatrix4Identity;
-//    [self.effect prepareToDraw];
+
     [prog use];
     [prog setUniform:"modelViewProjectionMatrix" mat4:GLKMatrix4Identity];
-    glBindTexture(GL_TEXTURE_2D, self.shadow.colorTex);
+    glBindTexture(GL_TEXTURE_2D, self.shadow.depthTex);
     glDisable(GL_CULL_FACE);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBindVertexArrayOES(_vertexArray);
     glVertexAttrib3f(GLKVertexAttribColor, 1.0, 1.0, 1.0);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-
     // Pass 2 (render)
-//    GLsizei width = [[self view] bounds].size.width;
-//    GLsizei height = [[self view] bounds].size.height;
-//    glViewport(0, 0, width, height);
 //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 //    glCullFace(GL_BACK);
 //    self.sceneEffect.light = self.light;

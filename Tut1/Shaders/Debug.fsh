@@ -17,5 +17,4 @@ void main()
 {
     float d = linearizeDepth(texCoord);
     gl_FragColor = vec4(d, d, d, 1.0);
-//    gl_FragColor = texture2D(depthSampler, texCoord);
 }

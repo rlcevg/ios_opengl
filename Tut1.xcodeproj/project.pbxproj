@@ -177,8 +177,8 @@
 		3E61F31B1716D72900FA7C64 /* Tut1 */ = {
 			isa = PBXGroup;
 			children = (
-				3EEA6EF3171F5019006B9B91 /* Debug.fsh */,
 				3EEA6EF4171F5019006B9B91 /* Debug.vsh */,
+				3EEA6EF3171F5019006B9B91 /* Debug.fsh */,
 				3E61F3241716D72900FA7C64 /* TUTAppDelegate.h */,
 				3E61F3251716D72900FA7C64 /* TUTAppDelegate.m */,
 				3E61F32D1716D72900FA7C64 /* MainStoryboard.storyboard */,

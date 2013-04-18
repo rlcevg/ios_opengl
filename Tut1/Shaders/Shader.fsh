@@ -54,12 +54,12 @@ void main()
     vec3 diffAndSpec = phongHalfModelDiffAndSpec();
 
     // Do the shadow-map look-up
-//    float shadow = shadow2DProjEXT(shadowMap, shadowCoord);
+    float shadow = shadow2DProjEXT(shadowMap, shadowCoord);
 
-//    float shadowZ = shadowCoord.z / shadowCoord.w;
+    float shadowZ = shadowCoord.z / shadowCoord.w;
 //    shadow = mapLinear(shadow + mapLinear(shadowZ, -1.0, 1.0), 0.1, 1.0);
+    shadow = mapLinear(shadow + mapLinear(shadowZ, -10.0, 0.9), 0.1, 1.0);
 
     // If the fragment is in shadow, use ambient light only.
-//    gl_FragColor = vec4(diffAndSpec * shadow + ambient + emissive, 1.0) * color;
-    gl_FragColor = vec4(diffAndSpec + ambient + emissive, 1.0) * color;
+    gl_FragColor = vec4(diffAndSpec * shadow + ambient + emissive, 1.0) * color;
 }
