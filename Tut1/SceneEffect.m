@@ -49,12 +49,14 @@
 {
     if (!_program) {
         _program = [GLSLProgram new];
-        NSDictionary *attr = @{
-            [NSNumber numberWithInteger:GLKVertexAttribPosition] : @"positionVertex",
-            [NSNumber numberWithInteger:GLKVertexAttribNormal] : @"normalVertex",
-            [NSNumber numberWithInteger:GLKVertexAttribColor] : @"colorVertex",
-        };
-        if (![_program loadShaders:@"Shader" withAttr:attr]) {
+        [_program compileShader:@"Shader" type:GL_VERTEX_SHADER];
+        NSArray *names = [NSArray arrayWithObjects:@"Shader", @"common", nil];
+        [_program compileShaderFromFiles:names type:GL_FRAGMENT_SHADER];
+        [_program bindAttribLocation:GLKVertexAttribPosition name:"positionVertex"];
+        [_program bindAttribLocation:GLKVertexAttribNormal name:"normalVertex"];
+        [_program bindAttribLocation:GLKVertexAttribColor name:"colorVertex"];
+        if (![_program link]) {
+            NSLog(@"Failed to link program");
             [_program printLog];
         }
     }
@@ -65,13 +67,15 @@
 {
     if (!_programTexture) {
         _programTexture = [GLSLProgram new];
-        NSDictionary *attr = @{
-            [NSNumber numberWithInteger:GLKVertexAttribPosition] : @"positionVertex",
-            [NSNumber numberWithInteger:GLKVertexAttribNormal] : @"normalVertex",
-            [NSNumber numberWithInteger:GLKVertexAttribColor] : @"colorVertex",
-            [NSNumber numberWithInteger:GLKVertexAttribTexCoord0] : @"texCoordVertex",
-        };
-        if (![_programTexture loadShaders:@"ShaderTexture" withAttr:attr]) {
+        [_programTexture compileShader:@"ShaderTexture" type:GL_VERTEX_SHADER];
+        NSArray *names = [NSArray arrayWithObjects:@"ShaderTexture", @"common", nil];
+        [_programTexture compileShaderFromFiles:names type:GL_FRAGMENT_SHADER];
+        [_programTexture bindAttribLocation:GLKVertexAttribPosition name:"positionVertex"];
+        [_programTexture bindAttribLocation:GLKVertexAttribNormal name:"normalVertex"];
+        [_programTexture bindAttribLocation:GLKVertexAttribColor name:"colorVertex"];
+        [_programTexture bindAttribLocation:GLKVertexAttribTexCoord0 name:"texCoordVertex"];
+        if (![_programTexture link]) {
+            NSLog(@"Failed to link program");
             [_programTexture printLog];
         }
     }

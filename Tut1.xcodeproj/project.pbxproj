@@ -41,6 +41,8 @@
 		3E9ECBAF171D841E002DAB1E /* Shadow.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3E9ECBAE171D841E002DAB1E /* Shadow.fsh */; };
 		3E9ECBB2171D88EC002DAB1E /* Shadow.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3E9ECBB0171D858C002DAB1E /* Shadow.vsh */; };
 		3E9ECBB8171D93AA002DAB1E /* FBOShadow.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E9ECBB7171D93AA002DAB1E /* FBOShadow.m */; };
+		3EC0A8C1172D8AE800618EA1 /* common.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EC0A8BD172D86F300618EA1 /* common.vsh */; };
+		3EC0A8C2172D8AED00618EA1 /* common.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EC0A8BF172D87D900618EA1 /* common.fsh */; };
 		3EE5C0A0172D5F3A001E30EC /* ShaderTexture.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EE5C09D172D3FBD001E30EC /* ShaderTexture.vsh */; };
 		3EE5C0A1172D5F43001E30EC /* ShaderTexture.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EE5C09C172D3FBD001E30EC /* ShaderTexture.fsh */; };
 		3EEA6EF7171F502D006B9B91 /* DebugShadow.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EEA6EF3171F5019006B9B91 /* DebugShadow.fsh */; };
@@ -111,6 +113,8 @@
 		3E9ECBB0171D858C002DAB1E /* Shadow.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Shadow.vsh; path = Shaders/Shadow.vsh; sourceTree = "<group>"; };
 		3E9ECBB6171D93AA002DAB1E /* FBOShadow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBOShadow.h; sourceTree = "<group>"; };
 		3E9ECBB7171D93AA002DAB1E /* FBOShadow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FBOShadow.m; sourceTree = "<group>"; };
+		3EC0A8BD172D86F300618EA1 /* common.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = common.vsh; path = Shaders/common.vsh; sourceTree = "<group>"; };
+		3EC0A8BF172D87D900618EA1 /* common.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = common.fsh; path = Shaders/common.fsh; sourceTree = "<group>"; };
 		3EE5C09C172D3FBD001E30EC /* ShaderTexture.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = ShaderTexture.fsh; path = Shaders/ShaderTexture.fsh; sourceTree = "<group>"; };
 		3EE5C09D172D3FBD001E30EC /* ShaderTexture.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = ShaderTexture.vsh; path = Shaders/ShaderTexture.vsh; sourceTree = "<group>"; };
 		3EEA6EF3171F5019006B9B91 /* DebugShadow.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DebugShadow.fsh; path = Shaders/DebugShadow.fsh; sourceTree = "<group>"; };
@@ -188,12 +192,14 @@
 				3E5B5B5F171B0B8900DFFD87 /* Utils.h */,
 				3EE5C09D172D3FBD001E30EC /* ShaderTexture.vsh */,
 				3EE5C09C172D3FBD001E30EC /* ShaderTexture.fsh */,
-				3EEA6EF4171F5019006B9B91 /* DebugShadow.vsh */,
-				3EEA6EF3171F5019006B9B91 /* DebugShadow.fsh */,
 				3E61F3321716D72900FA7C64 /* Shader.vsh */,
 				3E61F3301716D72900FA7C64 /* Shader.fsh */,
+				3EC0A8BD172D86F300618EA1 /* common.vsh */,
+				3EC0A8BF172D87D900618EA1 /* common.fsh */,
 				3E9ECBB0171D858C002DAB1E /* Shadow.vsh */,
 				3E9ECBAE171D841E002DAB1E /* Shadow.fsh */,
+				3EEA6EF4171F5019006B9B91 /* DebugShadow.vsh */,
+				3EEA6EF3171F5019006B9B91 /* DebugShadow.fsh */,
 				3E5B5B56171AC5C400DFFD87 /* VBOTeapot.h */,
 				3E5B5B57171AC5C400DFFD87 /* VBOTeapot.m */,
 				3E5B5B5C171B07B600DFFD87 /* VBOFloor.h */,
@@ -327,6 +333,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3EC0A8C1172D8AE800618EA1 /* common.vsh in Resources */,
+				3EC0A8C2172D8AED00618EA1 /* common.fsh in Resources */,
 				3EE5C0A0172D5F3A001E30EC /* ShaderTexture.vsh in Resources */,
 				3EE5C0A1172D5F43001E30EC /* ShaderTexture.fsh in Resources */,
 				3EEA6EF8171F502F006B9B91 /* DebugShadow.vsh in Resources */,

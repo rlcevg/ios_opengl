@@ -16,6 +16,8 @@
 - (BOOL)loadShaders:(NSString *)name withAttr:(NSDictionary *)attr;
 - (BOOL)compileShader:(NSString *)name type:(GLenum)type;
 - (BOOL)compileShaderFromString:(const GLchar *)source type:(GLenum)type;
+- (BOOL)compileShaderFromFiles:(NSArray *)names type:(GLenum)type;
+- (BOOL)compileShaderFromStrings:(const GLchar **)sources num:(int)num type:(GLenum)type;
 - (BOOL)link;
 - (BOOL)validate;
 - (void)use;

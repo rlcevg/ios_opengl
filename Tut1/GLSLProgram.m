@@ -111,12 +111,12 @@ typedef void (*GLLogFunction)(GLuint program, GLsizei bufsize, GLsizei* length, 
     NSError *error;
     NSString *source = [NSString stringWithContentsOfFile:shaderPathname encoding:NSUTF8StringEncoding error:&error];
     if (!source) {
-        NSLog(@"Failed to load vertex shader: %@", [error localizedDescription]);
+        NSLog(@"Failed to load shader: %@", [error localizedDescription]);
         return NO;
     }
 
     if (![self compileShaderFromString:[source UTF8String] type:type]) {
-        NSLog(@"Failed to compile vertex shader");
+        NSLog(@"Failed to compile shader");
         return NO;
     }
 
@@ -124,6 +124,57 @@ typedef void (*GLLogFunction)(GLuint program, GLsizei bufsize, GLsizei* length, 
 }
 
 - (BOOL)compileShaderFromString:(const GLchar *)source type:(GLenum)type
+{
+    return [self compileShaderFromStrings:&source num:1 type:type];
+}
+
+- (BOOL)compileShaderFromFiles:(NSArray *)names type:(GLenum)type
+{
+    NSString *shaderType = nil;
+    switch (type) {
+        case GL_VERTEX_SHADER:
+            shaderType = @"vsh";
+            break;
+        case GL_FRAGMENT_SHADER:
+            shaderType = @"fsh";
+            break;
+        default:
+            return NO;
+    }
+
+    GLchar **sources = (GLchar **)malloc(sizeof(GLchar *) * [names count]);
+    int num = 0;
+    for (NSString *name in names) {
+        NSString *shaderPathname = [[NSBundle mainBundle] pathForResource:name ofType:shaderType];
+        NSError *error;
+        NSString *source = [NSString stringWithContentsOfFile:shaderPathname encoding:NSUTF8StringEncoding error:&error];
+        if (!source) {
+            NSLog(@"Failed to load shader: %@", [error localizedDescription]);
+            for (int i = 0; i < num; i++) {
+                free(sources[i]);
+            }
+            free(sources);
+            return NO;
+        }
+        sources[num] = (GLchar *)malloc(sizeof(GLchar) * ([source length] + 1));
+        strcpy(sources[num], [source UTF8String]);
+        num++;
+    }
+
+    BOOL compiled = [self compileShaderFromStrings:(const GLchar **)sources num:num type:type];
+    for (int i = 0; i < num; i++) {
+        free(sources[i]);
+    }
+    free(sources);
+    if (!compiled) {
+        NSLog(@"Failed to compile shader");
+        return NO;
+    }
+
+    return YES;
+}
+
+- (BOOL)compileShaderFromStrings:(const GLchar **)sources num:(int)num type:(GLenum)type
 {
     if (self.handle == 0) {
         self.handle = glCreateProgram();
@@ -135,7 +186,7 @@ typedef void (*GLLogFunction)(GLuint program, GLsizei bufsize, GLsizei* length, 
 
     GLuint shaderHandle = glCreateShader(type);
 
-    glShaderSource(shaderHandle, 1, &source, NULL);
+    glShaderSource(shaderHandle, num, sources, NULL);
     glCompileShader(shaderHandle);
 
     GLint status;
@@ -381,13 +432,13 @@ typedef void (*GLLogFunction)(GLuint program, GLsizei bufsize, GLsizei* length, 
 
 - (void)clear
 {
-    for (NSNumber *handle in self.shaderHandle) {
-        GLuint shader = (GLuint)[handle integerValue];
-        glDetachShader(self.handle, shader);
-        glDeleteShader(shader);
-    }
-    [self.shaderHandle removeAllObjects];
     if (self.handle) {
+        for (NSNumber *handle in self.shaderHandle) {
+            GLuint shader = (GLuint)[handle integerValue];
+            glDetachShader(self.handle, shader);
+            glDeleteShader(shader);
+        }
+        [self.shaderHandle removeAllObjects];
         glDeleteProgram(self.handle);
         self.handle = 0;
     }
