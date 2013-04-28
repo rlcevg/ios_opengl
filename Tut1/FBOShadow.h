@@ -19,9 +19,7 @@
 
 @property (weak, nonatomic) Light *light;
 @property (assign, nonatomic, getter=isEnabled) BOOL enabled;
-#ifdef DEBUG
-@property (assign, nonatomic, readonly) GLuint depthTex;
-@property (assign, nonatomic, readonly) GLuint handle;
-#endif
+@property (assign, nonatomic, readonly) GLuint name;
+@property (assign, nonatomic, readonly) GLenum target;
 
 @end

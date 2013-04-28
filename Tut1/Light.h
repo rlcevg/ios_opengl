@@ -7,6 +7,7 @@
 //
 
 #import "Camera.h"
+@class FBOShadow;
 
 @interface Light : Camera
 
@@ -16,5 +17,6 @@
 
 @property (assign, nonatomic) GLKVector4 position;
 @property (assign, nonatomic) GLKVector3 intensity;
+@property (strong, nonatomic, readonly) FBOShadow *shadow;
 
 @end

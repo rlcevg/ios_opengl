@@ -11,12 +11,10 @@
 attribute vec4 positionVertex;
 attribute vec3 normalVertex;
 attribute vec4 colorVertex;
-attribute vec2 texCoordVertex;
 
 varying vec3 position;
 varying vec3 normal;
 varying vec4 color;
-varying vec2 texCoord;
 varying vec4 shadowCoord;
 
 uniform mat4 modelviewMatrix;
@@ -30,7 +28,6 @@ void main()
     normal = normalize(normalMatrix * normalVertex);
     shadowCoord = shadowMatrix * positionVertex;
     color = colorVertex;
-    texCoord = texCoordVertex;
 
     gl_Position = modelViewProjectionMatrix * positionVertex;
 }

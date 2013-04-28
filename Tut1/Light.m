@@ -7,10 +7,13 @@
 //
 
 #import "Light.h"
+#import "FBOShadow.h"
 
 #pragma mark
 
 @interface Light ()
+
+@property (strong, nonatomic) FBOShadow *shadow;
 
 @end
 
@@ -26,8 +29,14 @@
                        center:center up:up fovy:fovy aspect:aspect nearZ:nearZ farZ:farZ];
     if (self) {
         _intensity = intensity;
+        _shadow = nil;
     }
     return self;
+}
+
+- (void)dealloc
+{
+    self.shadow = nil;
 }
 
 - (GLKVector4)position
@@ -39,6 +48,15 @@
 - (void)setPosition:(GLKVector4)position
 {
     self.eye = GLKVector3Make(position.x, position.y, position.z);
+}
+
+- (FBOShadow *)shadow
+{
+    if (!_shadow) {
+        _shadow = [FBOShadow new];
+        _shadow.light = self;
+    }
+    return _shadow;
 }
 
 @end

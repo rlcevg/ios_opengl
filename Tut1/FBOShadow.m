@@ -20,6 +20,8 @@
 @property (strong, nonatomic) GLSLProgram *program;
 @property (assign, nonatomic) GLsizei width;
 @property (assign, nonatomic) GLsizei height;
+@property (assign, nonatomic) GLuint name;
+@property (assign, nonatomic) GLenum target;
 
 @end
 
@@ -28,6 +30,7 @@
 @implementation FBOShadow
 
 @synthesize program = _program;
+@synthesize name = _depthTex;
 
 - (id)init
 {
@@ -42,6 +45,7 @@
         _width = width;
         _height = height;
         _light = nil;
+        _target = GL_TEXTURE_2D;
 
         // Assign the shadow map to texture channel 0
         glActiveTexture(GL_TEXTURE0);

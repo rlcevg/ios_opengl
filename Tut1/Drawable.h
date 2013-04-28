@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
+@class FBOShadow;
 
 typedef struct {
     GLKVector3 Ke; // Emissive light
@@ -27,6 +28,7 @@ typedef struct {
 
 - (void)update:(float)time;
 - (GLKVector3)constantColor;
+- (GLKTextureInfo *)texture;
 
 @end
 

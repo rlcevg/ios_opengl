@@ -15,9 +15,12 @@
 
 #pragma mark
 
-@interface SceneEffect ()
-
+@interface SceneEffect () {
+    GLKVector4 _lightPosition;
+    GLKMatrix4 _lightViewProjectionMatrix;
+}
 @property (strong, nonatomic) GLSLProgram *program;
+@property (strong, nonatomic) GLSLProgram *programTexture;
 
 @end
 
@@ -50,7 +53,6 @@
             [NSNumber numberWithInteger:GLKVertexAttribPosition] : @"positionVertex",
             [NSNumber numberWithInteger:GLKVertexAttribNormal] : @"normalVertex",
             [NSNumber numberWithInteger:GLKVertexAttribColor] : @"colorVertex",
-            [NSNumber numberWithInteger:GLKVertexAttribTexCoord0] : @"texCoordVertex",
         };
         if (![_program loadShaders:@"Shader" withAttr:attr]) {
             [_program printLog];
@@ -59,9 +61,43 @@
     return _program;
 }
 
+- (GLSLProgram *)programTexture
+{
+    if (!_programTexture) {
+        _programTexture = [GLSLProgram new];
+        NSDictionary *attr = @{
+            [NSNumber numberWithInteger:GLKVertexAttribPosition] : @"positionVertex",
+            [NSNumber numberWithInteger:GLKVertexAttribNormal] : @"normalVertex",
+            [NSNumber numberWithInteger:GLKVertexAttribColor] : @"colorVertex",
+            [NSNumber numberWithInteger:GLKVertexAttribTexCoord0] : @"texCoordVertex",
+        };
+        if (![_programTexture loadShaders:@"ShaderTexture" withAttr:attr]) {
+            [_programTexture printLog];
+        }
+    }
+    return _programTexture;
+}
+
+- (void)prepareToDraw
+{
+    _lightPosition = GLKMatrix4MultiplyVector4(self.camera.viewMatrix, self.light.position);
+    _lightViewProjectionMatrix = GLKMatrix4Multiply(
+        GLKMatrix4Multiply(
+            [FBOShadow shadowBias],
+            self.light.projectionMatrix
+        ),
+        self.light.viewMatrix
+    );
+}
+
 - (void)prepareToDraw:(id<Drawable>)object
 {
-    GLSLProgram *program = self.program;
+    GLSLProgram *program = nil;
+    BOOL respondsToTexture = [object respondsToSelector:@selector(texture)];
+    if (respondsToTexture)
+        program = self.programTexture;
+    else
+        program = self.program;
     [program use];
 
     MaterialInfo material = [object material];
@@ -73,15 +109,14 @@
 
     if (self.light) {
         if (self.camera) {
-            [program setUniform:"light.position"
-                           vec4:GLKMatrix4MultiplyVector4(self.camera.viewMatrix,
-                                                          self.light.position)];
+            [program setUniform:"light.position" vec4:_lightPosition];
         }
         [program setUniform:"light.intensity" vec3:self.light.intensity];
-        GLKMatrix4 lightViewProjectionMatrix = GLKMatrix4Multiply(GLKMatrix4Multiply(
-                    [FBOShadow shadowBias], self.light.projectionMatrix),
-                    self.light.viewMatrix);
-        [program setUniform:"shadowMatrix" mat4:GLKMatrix4Multiply(lightViewProjectionMatrix, object.modelMatrix)];
+        [program setUniform:"shadowMatrix" mat4:GLKMatrix4Multiply(_lightViewProjectionMatrix, object.modelMatrix)];
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(self.light.shadow.target, self.light.shadow.name);
+        [program setUniform:"shadowMap" valInt:0];
     }
 
     if (self.camera) {
@@ -93,11 +128,16 @@
         [program setUniform:"modelViewProjectionMatrix" mat4:modelViewProjectionMatrix];
     }
 
-    [program setUniform:"shadowMap" valInt:0];
-
     if ([object respondsToSelector:@selector(constantColor)]) {
         GLKVector3 color = [object constantColor];
         glVertexAttrib3fv(GLKVertexAttribColor, (const GLfloat *)&color);
+    }
+
+    if (respondsToTexture) {
+        GLKTextureInfo *tex = [object texture];
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(tex.target, tex.name);
+        [program setUniform:"tex1" valInt:1];
     }
 }
 

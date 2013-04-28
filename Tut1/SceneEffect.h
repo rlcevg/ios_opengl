@@ -12,6 +12,7 @@
 
 @interface SceneEffect : NSObject <Effect>
 
+- (void)prepareToDraw;
 - (void)prepareToDraw:(id<Drawable>)object;
 
 @property (weak, nonatomic) Light *light;

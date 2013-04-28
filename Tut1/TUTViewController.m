@@ -19,8 +19,6 @@
 #pragma mark
 
 @interface TUTViewController () {
-    GLuint _vertexArray, _vertexBuffer;
-    GLSLProgram *prog;
     float _rotation;
 }
 @property (strong, nonatomic) EAGLContext *context;
@@ -31,7 +29,6 @@
 @property (strong, nonatomic) VBOTeapot *teapot;
 @property (strong, nonatomic) VBOFloor *floor;
 @property (strong, nonatomic) VBOTorus *torus;
-@property (strong, nonatomic) FBOShadow *shadow;
 @property (strong, nonatomic) Camera *camera;
 @property (strong, nonatomic) Light *light;
 @property (strong, nonatomic) SceneEffect *sceneEffect;
@@ -120,15 +117,12 @@
     material.Ks = GLKVector3Make(0.2f, 0.2f, 0.2f);
     material.shininess = 10.0f;
     self.floor.material = material;
-// TODO: remove constantColor and add texture for floor
-self.floor.constantColor = GLKVector3Make(0.5f, 0.5f, 0.5f);
+    self.floor.constantColor = GLKVector3Make(0.8f, 0.8f, 0.8f);
     self.torus = [VBOTorus new];
     material.Ks = GLKVector3Make(5.5f, 7.5f, 9.5f);
     material.Ke = GLKVector3Make(0.1f, 0.1f, 0.3f);
     material.shininess = 100.0f;
     self.torus.material = material;
-
-    self.shadow = [FBOShadow new];
 
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     self.camera = [[Camera alloc] initWithEye:GLKVector3Make(-1.0f, 7.0f, 5.0f)
@@ -143,42 +137,6 @@ self.floor.constantColor = GLKVector3Make(0.5f, 0.5f, 0.5f);
     glEnable(GL_CULL_FACE);
 
     ((GLKView *)self.view).drawableMultisample = GLKViewDrawableMultisample4X;
-
-
-#pragma mark - Debug
-
-    typedef struct {
-        GLKVector3 vert;
-        GLKVector2 tex;
-    } dataDebug;
-    static dataDebug data[4] = {
-        {{-1.0, -1.0, 0.0}, {0.0, 0.0}},
-        {{1.0, -1.0, 0.0}, {1.0, 0.0}},
-        {{-1.0, 1.0, 0.0}, {0.0, 1.0}},
-        {{1.0, 1.0, 0.0}, {1.0, 1.0}}
-    };
-    glGenVertexArraysOES(1, &_vertexArray);
-    glBindVertexArrayOES(_vertexArray);
-
-    glGenBuffers(1, &_vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(dataDebug), (const GLvoid *)offsetof(dataDebug, vert));
-    glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
-    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(dataDebug), (const GLvoid *)offsetof(dataDebug, tex));
-    NSLog(@"%x", glGetError());
-
-    glBindVertexArrayOES(0);
-    prog = [GLSLProgram new];
-    NSDictionary *attr = @{
-        [NSNumber numberWithInteger:GLKVertexAttribPosition] : @"positionVertex",
-        [NSNumber numberWithInteger:GLKVertexAttribTexCoord0] : @"texCoordVertex",
-    };
-    if (![prog loadShaders:@"DebugShadow" withAttr:attr]) {
-        [prog printLog];
-    }
 }
 
 - (void)tearDownGL
@@ -192,11 +150,7 @@ self.floor.constantColor = GLKVector3Make(0.5f, 0.5f, 0.5f);
     self.floor = nil;
     self.torus = nil;
 
-    self.shadow = nil;
     self.sceneEffect = nil;
-
-    glDeleteBuffers(1, &_vertexBuffer);
-    glDeleteVertexArraysOES(1, &_vertexArray);
 }
 
 #pragma mark - GLKView and GLKViewController delegate methods
@@ -230,31 +184,21 @@ self.floor.constantColor = GLKVector3Make(0.5f, 0.5f, 0.5f);
     CFTimeInterval previousTimestamp = CFAbsoluteTimeGetCurrent();
 
     // Pass 1 (shadow map generation)
-    self.shadow.light = self.light;
-    self.shadow.enabled = YES;
-    [self renderWith:self.shadow];
-    self.shadow.enabled = NO;
+    self.light.shadow.enabled = YES;
+    [self renderWith:self.light.shadow];
+    self.light.shadow.enabled = NO;
     [(GLKView *)self.view bindDrawable];
-
-//    [prog use];
-//    [prog setUniform:"modelViewProjectionMatrix" mat4:GLKMatrix4Identity];
-//    glBindTexture(GL_TEXTURE_2D, self.shadow.depthTex);
-//    glDisable(GL_CULL_FACE);
-//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//    glBindVertexArrayOES(_vertexArray);
-//    glVertexAttrib3f(GLKVertexAttribColor, 1.0, 1.0, 1.0);
-//    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     // Pass 2 (render)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glCullFace(GL_BACK);
     self.sceneEffect.light = self.light;
     self.sceneEffect.camera = self.camera;
+    [self.sceneEffect prepareToDraw];
     [self renderWith:self.sceneEffect];
 
 //    glUseProgram(0);
 
-    // Do your OpenGL ES frame rendering here, as well as presenting the onscreen render buffer
     CFTimeInterval frameDuration = CFAbsoluteTimeGetCurrent() - previousTimestamp;
     if (self.framesDisplayed % 20 == 0) {
         self.labelFPS.text = [NSString stringWithFormat:@"%f", 1 / frameDuration];
