@@ -165,14 +165,18 @@ self.floor.constantColor = GLKVector3Make(0.5f, 0.5f, 0.5f);
     glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(dataDebug), offsetof(dataDebug, vert));
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(dataDebug), (const GLvoid *)offsetof(dataDebug, vert));
     glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
-    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(dataDebug), offsetof(dataDebug, tex));
+    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(dataDebug), (const GLvoid *)offsetof(dataDebug, tex));
     NSLog(@"%x", glGetError());
 
     glBindVertexArrayOES(0);
     prog = [GLSLProgram new];
-    if (![prog loadShaders:@"Debug"]) {
+    NSDictionary *attr = @{
+        [NSNumber numberWithInteger:GLKVertexAttribPosition] : @"positionVertex",
+        [NSNumber numberWithInteger:GLKVertexAttribTexCoord0] : @"texCoordVertex",
+    };
+    if (![prog loadShaders:@"DebugShadow" withAttr:attr]) {
         [prog printLog];
     }
 }
@@ -232,21 +236,21 @@ self.floor.constantColor = GLKVector3Make(0.5f, 0.5f, 0.5f);
     self.shadow.enabled = NO;
     [(GLKView *)self.view bindDrawable];
 
-    [prog use];
-    [prog setUniform:"modelViewProjectionMatrix" mat4:GLKMatrix4Identity];
-    glBindTexture(GL_TEXTURE_2D, self.shadow.depthTex);
-    glDisable(GL_CULL_FACE);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glBindVertexArrayOES(_vertexArray);
-    glVertexAttrib3f(GLKVertexAttribColor, 1.0, 1.0, 1.0);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+//    [prog use];
+//    [prog setUniform:"modelViewProjectionMatrix" mat4:GLKMatrix4Identity];
+//    glBindTexture(GL_TEXTURE_2D, self.shadow.depthTex);
+//    glDisable(GL_CULL_FACE);
+//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//    glBindVertexArrayOES(_vertexArray);
+//    glVertexAttrib3f(GLKVertexAttribColor, 1.0, 1.0, 1.0);
+//    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     // Pass 2 (render)
-//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//    glCullFace(GL_BACK);
-//    self.sceneEffect.light = self.light;
-//    self.sceneEffect.camera = self.camera;
-//    [self renderWith:self.sceneEffect];
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glCullFace(GL_BACK);
+    self.sceneEffect.light = self.light;
+    self.sceneEffect.camera = self.camera;
+    [self renderWith:self.sceneEffect];
 
 //    glUseProgram(0);
 
@@ -260,12 +264,13 @@ self.floor.constantColor = GLKVector3Make(0.5f, 0.5f, 0.5f);
 
 - (void)renderWith:(id<Effect>)effect
 {
-    [effect prepareToDraw:self.floor];
-    [self.floor render];
-    [effect prepareToDraw:self.torus];
-    [self.torus render];
+    // TODO: Sort objects in Z-order
     [effect prepareToDraw:self.teapot];
     [self.teapot render];
+    [effect prepareToDraw:self.torus];
+    [self.torus render];
+    [effect prepareToDraw:self.floor];
+    [self.floor render];
 }
 
 - (IBAction)handleTap:(UITapGestureRecognizer *)sender

@@ -13,6 +13,7 @@
 
 - (id)init;
 - (BOOL)loadShaders:(NSString *)name;
+- (BOOL)loadShaders:(NSString *)name withAttr:(NSDictionary *)attr;
 - (BOOL)compileShader:(NSString *)name type:(GLenum)type;
 - (BOOL)compileShaderFromString:(const GLchar *)source type:(GLenum)type;
 - (BOOL)link;
@@ -23,6 +24,7 @@
 - (void)bindAttribLocation:(GLuint)location name:(const GLchar *)name;
 //- (void)bindFragDataLocation:(GLuint)location name:(const GLchar *)name;
 - (GLint)getUniformLocation:(const GLchar *)name;
+- (GLint)getAttribLocation:(const GLchar *)name;
 
 - (void)setUniform:(const GLchar *)name x:(float)x y:(float)y z:(float)z;
 - (void)setUniform:(const GLchar *)name vec3:(GLKVector3)v;

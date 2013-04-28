@@ -62,10 +62,28 @@ typedef void (*GLLogFunction)(GLuint program, GLsizei bufsize, GLsizei* length, 
         return NO;
     }
 
-    glBindAttribLocation(self.handle, GLKVertexAttribPosition, "positionVertex");
-    glBindAttribLocation(self.handle, GLKVertexAttribNormal, "normalVertex");
-    glBindAttribLocation(self.handle, GLKVertexAttribColor, "colorVertex");
-    glBindAttribLocation(self.handle, GLKVertexAttribTexCoord0, "texCoordVertex");
+    if (![self link]) {
+        NSLog(@"Failed to link program");
+        return NO;
+    }
+
+    return YES;
+}
+
+- (BOOL)loadShaders:(NSString *)name withAttr:(NSDictionary *)attr
+{
+    if (![self compileShader:name type:GL_VERTEX_SHADER]) {
+        NSLog(@"Failed to compile vertex shader");
+        return NO;
+    }
+    if (![self compileShader:name type:GL_FRAGMENT_SHADER]) {
+        NSLog(@"Failed to compile fragment shader");
+        return NO;
+    }
+
+    [attr enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        glBindAttribLocation(self.handle, [(NSNumber *)key integerValue], [(NSString *)obj UTF8String]);
+    }];
 
     if (![self link]) {
         NSLog(@"Failed to link program");
@@ -77,7 +95,7 @@ typedef void (*GLLogFunction)(GLuint program, GLsizei bufsize, GLsizei* length, 
 
 - (BOOL)compileShader:(NSString *)name type:(GLenum)type
 {
-    NSString *shaderType;
+    NSString *shaderType = nil;
     switch (type) {
         case GL_VERTEX_SHADER:
             shaderType = @"vsh";
@@ -335,6 +353,11 @@ typedef void (*GLLogFunction)(GLuint program, GLsizei bufsize, GLsizei* length, 
 - (GLint)getUniformLocation:(const GLchar *)name
 {
     return glGetUniformLocation(self.handle, name);
+}
+
+- (GLint)getAttribLocation:(const GLchar *)name
+{
+    return glGetAttribLocation(self.handle, name);
 }
 
 - (NSString *)logForOpenGLObject:(GLuint)object

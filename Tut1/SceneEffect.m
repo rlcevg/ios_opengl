@@ -46,7 +46,13 @@
 {
     if (!_program) {
         _program = [GLSLProgram new];
-        if (![_program loadShaders:@"Shader"]) {
+        NSDictionary *attr = @{
+            [NSNumber numberWithInteger:GLKVertexAttribPosition] : @"positionVertex",
+            [NSNumber numberWithInteger:GLKVertexAttribNormal] : @"normalVertex",
+            [NSNumber numberWithInteger:GLKVertexAttribColor] : @"colorVertex",
+            [NSNumber numberWithInteger:GLKVertexAttribTexCoord0] : @"texCoordVertex",
+        };
+        if (![_program loadShaders:@"Shader" withAttr:attr]) {
             [_program printLog];
         }
     }

@@ -58,7 +58,7 @@ void main()
 
     float shadowZ = shadowCoord.z / shadowCoord.w;
 //    shadow = mapLinear(shadow + mapLinear(shadowZ, -1.0, 1.0), 0.1, 1.0);
-    shadow = mapLinear(shadow + mapLinear(shadowZ, -10.0, 0.9), 0.1, 1.0);
+    shadow = clamp(shadow + mapLinear(shadowZ, -10.0, 0.9), 0.1, 1.0);
 
     // If the fragment is in shadow, use ambient light only.
     gl_FragColor = vec4(diffAndSpec * shadow + ambient + emissive, 1.0) * color;

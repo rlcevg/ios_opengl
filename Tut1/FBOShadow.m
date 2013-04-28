@@ -98,7 +98,10 @@
 {
     if (!_program) {
         _program = [GLSLProgram new];
-        if (![_program loadShaders:@"Shadow"]) {
+        NSDictionary *attr = @{
+            [NSNumber numberWithInteger:GLKVertexAttribPosition] : @"positionVertex",
+        };
+        if (![_program loadShaders:@"Shadow" withAttr:attr]) {
             [_program printLog];
         }
     }

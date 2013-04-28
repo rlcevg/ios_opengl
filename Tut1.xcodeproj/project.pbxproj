@@ -41,10 +41,8 @@
 		3E9ECBAF171D841E002DAB1E /* Shadow.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3E9ECBAE171D841E002DAB1E /* Shadow.fsh */; };
 		3E9ECBB2171D88EC002DAB1E /* Shadow.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3E9ECBB0171D858C002DAB1E /* Shadow.vsh */; };
 		3E9ECBB8171D93AA002DAB1E /* FBOShadow.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E9ECBB7171D93AA002DAB1E /* FBOShadow.m */; };
-		3EEA6EF5171F5019006B9B91 /* Debug.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 3EEA6EF3171F5019006B9B91 /* Debug.fsh */; };
-		3EEA6EF6171F5019006B9B91 /* Debug.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 3EEA6EF4171F5019006B9B91 /* Debug.vsh */; };
-		3EEA6EF7171F502D006B9B91 /* Debug.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EEA6EF3171F5019006B9B91 /* Debug.fsh */; };
-		3EEA6EF8171F502F006B9B91 /* Debug.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EEA6EF4171F5019006B9B91 /* Debug.vsh */; };
+		3EEA6EF7171F502D006B9B91 /* DebugShadow.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EEA6EF3171F5019006B9B91 /* DebugShadow.fsh */; };
+		3EEA6EF8171F502F006B9B91 /* DebugShadow.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EEA6EF4171F5019006B9B91 /* DebugShadow.vsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,8 +109,8 @@
 		3E9ECBB0171D858C002DAB1E /* Shadow.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Shadow.vsh; path = Shaders/Shadow.vsh; sourceTree = "<group>"; };
 		3E9ECBB6171D93AA002DAB1E /* FBOShadow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBOShadow.h; sourceTree = "<group>"; };
 		3E9ECBB7171D93AA002DAB1E /* FBOShadow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FBOShadow.m; sourceTree = "<group>"; };
-		3EEA6EF3171F5019006B9B91 /* Debug.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Debug.fsh; path = Shaders/Debug.fsh; sourceTree = "<group>"; };
-		3EEA6EF4171F5019006B9B91 /* Debug.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Debug.vsh; path = Shaders/Debug.vsh; sourceTree = "<group>"; };
+		3EEA6EF3171F5019006B9B91 /* DebugShadow.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DebugShadow.fsh; path = Shaders/DebugShadow.fsh; sourceTree = "<group>"; };
+		3EEA6EF4171F5019006B9B91 /* DebugShadow.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DebugShadow.vsh; path = Shaders/DebugShadow.vsh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,8 +175,8 @@
 		3E61F31B1716D72900FA7C64 /* Tut1 */ = {
 			isa = PBXGroup;
 			children = (
-				3EEA6EF4171F5019006B9B91 /* Debug.vsh */,
-				3EEA6EF3171F5019006B9B91 /* Debug.fsh */,
+				3EEA6EF4171F5019006B9B91 /* DebugShadow.vsh */,
+				3EEA6EF3171F5019006B9B91 /* DebugShadow.fsh */,
 				3E61F3241716D72900FA7C64 /* TUTAppDelegate.h */,
 				3E61F3251716D72900FA7C64 /* TUTAppDelegate.m */,
 				3E61F32D1716D72900FA7C64 /* MainStoryboard.storyboard */,
@@ -323,8 +321,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3EEA6EF8171F502F006B9B91 /* Debug.vsh in Resources */,
-				3EEA6EF7171F502D006B9B91 /* Debug.fsh in Resources */,
+				3EEA6EF8171F502F006B9B91 /* DebugShadow.vsh in Resources */,
+				3EEA6EF7171F502D006B9B91 /* DebugShadow.fsh in Resources */,
 				3E61F3201716D72900FA7C64 /* InfoPlist.strings in Resources */,
 				3E61F3281716D72900FA7C64 /* Default.png in Resources */,
 				3E61F32A1716D72900FA7C64 /* Default@2x.png in Resources */,
@@ -383,8 +381,6 @@
 				3E6107C4171E292600259DAB /* SceneEffect.m in Sources */,
 				3E22F8EC171EE19B00EA85A7 /* ProjectionInfo.m in Sources */,
 				3E22F8F2171EE3BD00EA85A7 /* ViewInfo.m in Sources */,
-				3EEA6EF5171F5019006B9B91 /* Debug.fsh in Sources */,
-				3EEA6EF6171F5019006B9B91 /* Debug.vsh in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
