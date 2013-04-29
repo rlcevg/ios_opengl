@@ -13,7 +13,7 @@
 
 - (id)init;
 - (BOOL)loadShaders:(NSString *)name;
-- (BOOL)loadShaders:(NSString *)name withAttr:(NSDictionary *)attr;
+- (BOOL)loadShaders:(NSString *)name withAttrs:(NSDictionary *)attrs;
 - (BOOL)compileShader:(NSString *)name type:(GLenum)type;
 - (BOOL)compileShaderFromString:(const GLchar *)source type:(GLenum)type;
 - (BOOL)compileShaderFromFiles:(NSArray *)names type:(GLenum)type;

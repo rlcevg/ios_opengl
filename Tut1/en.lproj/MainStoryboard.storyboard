@@ -64,7 +64,11 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
-                <panGestureRecognizer minimumNumberOfTouches="1" id="gLl-Jn-GNn"/>
+                <panGestureRecognizer minimumNumberOfTouches="1" id="gLl-Jn-GNn">
+                    <connections>
+                        <action selector="handlePan:" destination="2" id="aUU-vH-JCj"/>
+                    </connections>
+                </panGestureRecognizer>
                 <pinchGestureRecognizer id="5DF-hC-ZOJ"/>
                 <swipeGestureRecognizer direction="right" id="3b6-TI-0mv"/>
                 <tapGestureRecognizer id="6cP-Fr-lE8">
@@ -73,22 +77,9 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-238" y="196"/>
+            <point key="canvasLocation" x="-499" y="234"/>
         </scene>
     </scenes>
-    <classes>
-        <class className="NSLayoutConstraint" superclassName="NSObject">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/NSLayoutConstraint.h"/>
-        </class>
-        <class className="TUTViewController" superclassName="GLKViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/TUTViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="handleTap:" candidateClass="UITapGestureRecognizer"/>
-                <relationship kind="outlet" name="labelFPS" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelFPS2" candidateClass="UILabel"/>
-            </relationships>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <nil key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

@@ -70,7 +70,7 @@ typedef void (*GLLogFunction)(GLuint program, GLsizei bufsize, GLsizei* length, 
     return YES;
 }
 
-- (BOOL)loadShaders:(NSString *)name withAttr:(NSDictionary *)attr
+- (BOOL)loadShaders:(NSString *)name withAttrs:(NSDictionary *)attrs
 {
     if (![self compileShader:name type:GL_VERTEX_SHADER]) {
         NSLog(@"Failed to compile vertex shader");
@@ -81,7 +81,7 @@ typedef void (*GLLogFunction)(GLuint program, GLsizei bufsize, GLsizei* length, 
         return NO;
     }
 
-    [attr enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+    [attrs enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         glBindAttribLocation(self.handle, [(NSNumber *)key integerValue], [(NSString *)obj UTF8String]);
     }];
 
