@@ -14,5 +14,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *labelFPS2;
 - (IBAction)handleTap:(UITapGestureRecognizer *)sender;
 - (IBAction)handlePan:(UIPanGestureRecognizer *)sender;
+- (IBAction)switchMSAA:(UISwitch *)sender;
 
 @end

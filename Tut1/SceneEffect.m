@@ -118,6 +118,7 @@
         [program setUniform:"light.intensity" vec3:self.light.intensity];
         [program setUniform:"shadowMatrix" mat4:GLKMatrix4Multiply(_lightViewProjectionMatrix, object.modelMatrix)];
 
+        [program setUniform:"texelSize" vec2:self.light.shadow.texelSize];
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(self.light.shadow.target, self.light.shadow.name);
         [program setUniform:"shadowMap" valInt:0];

@@ -29,6 +29,7 @@
 - (GLint)getAttribLocation:(const GLchar *)name;
 
 - (void)setUniform:(const GLchar *)name x:(float)x y:(float)y z:(float)z;
+- (void)setUniform:(const GLchar *)name vec2:(GLKVector2)v;
 - (void)setUniform:(const GLchar *)name vec3:(GLKVector3)v;
 - (void)setUniform:(const GLchar *)name vec4:(GLKVector4)v;
 - (void)setUniform:(const GLchar *)name mat3:(GLKMatrix3)m;

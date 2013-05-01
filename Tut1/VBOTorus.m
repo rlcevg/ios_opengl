@@ -39,7 +39,7 @@ void generateVertexData(Vertex *vertices, int sides, int rings,
 
 - (id)init
 {
-    return [self initWithOuterRadius:0.5 innerRadius:0.2 nsides:40 nrings:60];
+    return [self initWithOuterRadius:1.0 innerRadius:0.3 nsides:40 nrings:60];
 }
 
 - (id)initWithOuterRadius:(float)outerRadius innerRadius:(float)innerRadius nsides:(int) nsides nrings:(int) nrings

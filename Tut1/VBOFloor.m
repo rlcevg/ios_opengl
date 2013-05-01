@@ -50,8 +50,8 @@ typedef struct {
         float z2 = zsize / 2.0f;
         float iFactor = (float)zsize / zdivs;
         float jFactor = (float)xsize / xdivs;
-        float texi = 1.0f / zdivs;
-        float texj = 1.0f / xdivs;
+        float texi = 4.0f / zdivs;
+        float texj = 4.0f / xdivs;
         float x, z;
         Vertex *pVert = vertices;
         float c1 = 5 / x2, c2 = 5 / z2, c3 = (xsize + zsize) / 20.0f;
@@ -124,13 +124,22 @@ typedef struct {
 - (void)loadTexture:(NSString *)fileName
 {
     NSError *error;
-    NSDictionary *options = @{GLKTextureLoaderOriginBottomLeft : @YES};
+    NSDictionary *options = @{
+        GLKTextureLoaderOriginBottomLeft : @YES,
+        GLKTextureLoaderGenerateMipmaps : @YES
+    };
     self.texture = [GLKTextureLoader textureWithCGImage:[UIImage imageNamed:fileName].CGImage
                                                 options:options
                                                   error:&error];
     if (error) {
         NSLog(@"Error loading texture from image: %@", error);
+        return;
     }
+    glBindTexture(GL_TEXTURE_2D, self.texture.name);
+    // Only for power of 2 textures
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 - (void)render

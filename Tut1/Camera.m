@@ -114,7 +114,10 @@
 
 - (void)setAspect:(float)aspect
 {
-    self.projection.aspect = aspect;
+    ProjectionInfo *projection = self.projection;
+    if (aspect != projection.aspect) {
+        projection.aspect = aspect;
+    }
 }
 
 - (float)nearZ

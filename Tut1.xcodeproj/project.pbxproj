@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3E22F8EC171EE19B00EA85A7 /* ProjectionInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E22F8EB171EE19B00EA85A7 /* ProjectionInfo.m */; };
 		3E22F8F2171EE3BD00EA85A7 /* ViewInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E22F8F1171EE3BD00EA85A7 /* ViewInfo.m */; };
+		3E2312CF172EE67E00FE2C77 /* FBOBloom.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E2312CE172EE67E00FE2C77 /* FBOBloom.m */; };
 		3E5B5B58171AC5C400DFFD87 /* VBOTeapot.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E5B5B57171AC5C400DFFD87 /* VBOTeapot.m */; };
 		3E5B5B5E171B07B600DFFD87 /* VBOFloor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E5B5B5D171B07B600DFFD87 /* VBOFloor.m */; };
 		3E5B5B62171B19F600DFFD87 /* VBOTorus.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E5B5B61171B19F600DFFD87 /* VBOTorus.m */; };
@@ -65,6 +66,8 @@
 		3E22F8F0171EE3BD00EA85A7 /* ViewInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewInfo.h; sourceTree = "<group>"; };
 		3E22F8F1171EE3BD00EA85A7 /* ViewInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewInfo.m; sourceTree = "<group>"; };
 		3E22F8F3171F062500EA85A7 /* Effect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Effect.h; sourceTree = "<group>"; };
+		3E2312CD172EE67E00FE2C77 /* FBOBloom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBOBloom.h; sourceTree = "<group>"; };
+		3E2312CE172EE67E00FE2C77 /* FBOBloom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FBOBloom.m; sourceTree = "<group>"; };
 		3E5B5B56171AC5C400DFFD87 /* VBOTeapot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VBOTeapot.h; sourceTree = "<group>"; };
 		3E5B5B57171AC5C400DFFD87 /* VBOTeapot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VBOTeapot.m; sourceTree = "<group>"; };
 		3E5B5B5C171B07B600DFFD87 /* VBOFloor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VBOFloor.h; sourceTree = "<group>"; };
@@ -210,6 +213,8 @@
 				3E98BFBC171C9C8A00C963E3 /* GLSLProgram.m */,
 				3E9ECBB6171D93AA002DAB1E /* FBOShadow.h */,
 				3E9ECBB7171D93AA002DAB1E /* FBOShadow.m */,
+				3E2312CD172EE67E00FE2C77 /* FBOBloom.h */,
+				3E2312CE172EE67E00FE2C77 /* FBOBloom.m */,
 				3E6107B7171E078800259DAB /* Camera.h */,
 				3E6107B8171E078800259DAB /* Camera.m */,
 				3E6107BA171E13AB00259DAB /* Drawable.h */,
@@ -397,6 +402,7 @@
 				3E6107C4171E292600259DAB /* SceneEffect.m in Sources */,
 				3E22F8EC171EE19B00EA85A7 /* ProjectionInfo.m in Sources */,
 				3E22F8F2171EE3BD00EA85A7 /* ViewInfo.m in Sources */,
+				3E2312CF172EE67E00FE2C77 /* FBOBloom.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

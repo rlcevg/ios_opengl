@@ -96,11 +96,11 @@
 #endif
 
     self.sceneEffect = [SceneEffect new];
-    self.light = [[Light alloc] initWithPosition:GLKVector4Make(-4.0f, 7.0f, 4.0f, 1.0f)
+    self.light = [[Light alloc] initWithPosition:GLKVector4Make(-5.0f, 7.0f, 5.0f, 1.0f)
                                           center:GLKVector3Make(0.0f, 0.0f, 0.0f)
                                               up:GLKVector3Make(0.0f, 1.0f, 0.0f)
                                             fovy:GLKMathDegreesToRadians(65.0f)
-                                          aspect:1.0f nearZ:1.0f farZ:20.0f
+                                          aspect:2.0f nearZ:1.0f farZ:20.0f
                                        intensity:GLKVector3Make(1.0f, 1.0f, 1.0f)];
 
     MaterialInfo material = {
@@ -132,11 +132,9 @@
                                         nearZ:0.1f farZ:50.0f];
 
     glClearColor(0.35f, 0.65f, 0.95f, 1.0f);
-    glPolygonOffset(1.0, 1.0);
+    glPolygonOffset(0.1, 0.1);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-
-//    ((GLKView *)self.view).drawableMultisample = GLKViewDrawableMultisample4X;
 }
 
 - (void)tearDownGL
@@ -161,7 +159,7 @@
     self.camera.aspect = aspect;
 
     // Compute the model view matrix for the object rendered with GLKit
-    GLKMatrix4 modelMatrix = GLKMatrix4Identity;
+    GLKMatrix4 modelMatrix = GLKMatrix4MakeYRotation(_rotation / 8);
     self.floor.modelMatrix = modelMatrix;
 
     modelMatrix = GLKMatrix4MakeTranslation(-2.0f, 4.0f, 2.0f);
@@ -169,10 +167,13 @@
     self.torus.modelMatrix = modelMatrix;
 
     // Compute the model view matrix for the object rendered with ES2
-    modelMatrix = GLKMatrix4MakeTranslation(2.0f, 0.0f, -2.0f);
+    modelMatrix = GLKMatrix4MakeTranslation(1.0f, 0.0f, -1.0f);
     modelMatrix = GLKMatrix4RotateY(modelMatrix, _rotation);
     modelMatrix = GLKMatrix4RotateX(modelMatrix, GLKMathDegreesToRadians(-90.0f));
     self.teapot.modelMatrix = modelMatrix;
+
+    GLKMatrix3 rotate = GLKMatrix3MakeRotation(self.timeSinceLastUpdate * 4, -4.0f, 7.0f, 4.0f);
+    self.light.eye = GLKMatrix3MultiplyVector3(rotate, self.light.eye);
 
     _rotation += self.timeSinceLastUpdate * 0.5f;
 
@@ -224,26 +225,7 @@
 
 - (IBAction)handlePan:(UIPanGestureRecognizer *)sender
 {
-//    if (sender.state == UIGestureRecognizerStateEnded) {
-//        CGPoint velocity = [sender velocityInView:self.view];
-//        CGFloat magnitude = sqrtf((velocity.x * velocity.x) + (velocity.y * velocity.y));
-//        CGFloat slideMult = magnitude / 200;
-//        NSLog(@"magnitude: %f, slideMult: %f", magnitude, slideMult);
-//
-//        float slideFactor = 0.1 * slideMult; // Increase for more of a slide
-//        CGPoint finalPoint = CGPointMake(sender.view.center.x + (velocity.x * slideFactor),
-//                                         sender.view.center.y + (velocity.y * slideFactor));
-//        finalPoint.x = MIN(MAX(finalPoint.x, 0), self.view.bounds.size.width);
-//        finalPoint.y = MIN(MAX(finalPoint.y, 0), self.view.bounds.size.height);
-//
-//        [UIView animateWithDuration:slideFactor * 2 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-//            sender.view.center = finalPoint;
-//        } completion:nil];
-//        
-//    }
-
     CGPoint translation = [sender translationInView:self.view];
-//    self.camera.eye = GLKMatrix3MultiplyVector3(GLKMatrix3MakeYRotation(GLKMathDegreesToRadians(translation.x)), self.camera.eye);
 
     GLKMatrix4 viewProjectionMatrix = GLKMatrix4Multiply(self.camera.projectionMatrix, self.camera.viewMatrix);
     GLKMatrix4 unproject = GLKMatrix4Invert(viewProjectionMatrix, NULL);
@@ -251,31 +233,23 @@
     GLKVector4 new_eye4 = GLKMatrix4MultiplyVector4(unproject, new_trans);
     GLKVector3 new_eye = GLKVector3Make(new_eye4.x, new_eye4.y, new_eye4.z);
     GLKVector3 rotor = GLKVector3CrossProduct(self.camera.eye, new_eye);
-    if (GLKVector3Length(rotor) == 0.0) {
-        rotor.x = 0.0;
+    if (rotor.x == 0.0 && rotor.y == 0.0 && rotor.z == 0.0) {
         rotor.y = 1.0;
-        rotor.z = 0.0;
-        NSLog(@"rotor == 0");
     }
     GLKMatrix3 rotate = GLKMatrix3MakeRotation(GLKMathDegreesToRadians(sqrtf(translation.x * translation.x + translation.y * translation.y)),
                                                rotor.x, rotor.y, rotor.z);
     self.camera.eye = GLKMatrix3MultiplyVector3(rotate, self.camera.eye);
 
-//    GLKVector3 window_coord = GLKVector3Make(self.view.window.center.x + translation.x, self.view.window.center.y + translation.y, 0.0f);
-//    bool result;
-//    int viewport[4];
-//    viewport[0] = 0.0f;
-//    viewport[1] = 0.0f;
-//    viewport[2] = self.view.bounds.size.width;
-//    viewport[3] = self.view.bounds.size.height;
-//    GLKVector3 new_eye = GLKMathUnproject(window_coord, self.camera.viewMatrix, self.camera.projectionMatrix, viewport, &result);
-//    NSLog(@"%f, %f, %f", new_eye.x, new_eye.y, new_eye.z);
-//    GLKVector3 rotor = GLKVector3CrossProduct(self.camera.eye, new_eye);
-//    GLKMatrix3 rotate = GLKMatrix3MakeRotation(GLKMathDegreesToRadians(sqrtf(translation.x * translation.x + translation.y * translation.y)),
-//                                               rotor.x, rotor.y, rotor.z);
-//    self.camera.eye = GLKMatrix3MultiplyVector3(rotate, self.camera.eye);
-
     [sender setTranslation:CGPointMake(0, 0) inView:self.view];
+}
+
+- (IBAction)switchMSAA:(UISwitch *)sender
+{
+    if (sender.on) {
+        ((GLKView *)self.view).drawableMultisample = GLKViewDrawableMultisample4X;
+    } else {
+        ((GLKView *)self.view).drawableMultisample = GLKViewDrawableMultisampleNone;
+    }
 }
 
 @end

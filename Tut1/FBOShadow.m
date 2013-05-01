@@ -34,7 +34,7 @@
 
 - (id)init
 {
-    return [self initWithWidth:1024 andHeight:1024];
+    return [self initWithWidth:512 andHeight:512];
 }
 
 - (id)initWithWidth:(GLsizei)width andHeight:(GLsizei)height
@@ -53,8 +53,8 @@
         glGenTextures(1, &_depthTex);
         glBindTexture(GL_TEXTURE_2D, _depthTex);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  // GL_NEAREST
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);  // GL_NEAREST
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  // GL_NEAREST GL_LINEAR
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);  // GL_NEAREST GL_LINEAR
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
@@ -127,6 +127,11 @@
         }
         _enabled = enabled;
     }
+}
+
+- (GLKVector2)texelSize
+{
+    return GLKVector2Make(1.0 / self.width, 1.0 / self.height);
 }
 
 - (void)prepareToDraw:(id<Drawable>)object

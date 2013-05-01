@@ -38,10 +38,24 @@
                                 <color key="textColor" red="0.0" green="1" blue="0.032178035061964039" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <switch opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="22x-Uu-JrB">
+                                <connections>
+                                    <action selector="switchMSAA:" destination="2" eventType="valueChanged" id="tAz-cS-LV5"/>
+                                </connections>
+                            </switch>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Multisample anti-aliasing" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pXW-Bk-Zt6">
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="xya-OZ-QFR"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                         <constraints>
+                            <constraint firstItem="22x-Uu-JrB" firstAttribute="centerY" secondItem="pXW-Bk-Zt6" secondAttribute="centerY" type="default" id="LH5-Ke-Uz1"/>
                             <constraint firstAttribute="trailing" secondItem="R8B-Oo-cGf" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="LXZ-n1-Ovc"/>
                             <constraint firstItem="R8B-Oo-cGf" firstAttribute="baseline" secondItem="Pay-pm-W32" secondAttribute="baseline" type="default" id="Nok-Sm-x5N"/>
                             <constraint firstItem="tli-mE-3iS" firstAttribute="leading" secondItem="wId-d0-pBC" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="cVe-5g-gJY"/>
@@ -49,13 +63,15 @@
                             <constraint firstAttribute="trailing" secondItem="tli-mE-3iS" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="e1D-6U-EFo"/>
                             <constraint firstItem="Pay-pm-W32" firstAttribute="top" secondItem="wId-d0-pBC" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="ghA-cd-0d1"/>
                             <constraint firstItem="wId-d0-pBC" firstAttribute="top" secondItem="3" secondAttribute="top" constant="20" symbolic="YES" type="default" id="h5a-wb-rRr"/>
+                            <constraint firstAttribute="trailing" secondItem="22x-Uu-JrB" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="jXK-Wz-2q1"/>
+                            <constraint firstItem="22x-Uu-JrB" firstAttribute="leading" secondItem="pXW-Bk-Zt6" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="o6w-ey-E3X"/>
                             <constraint firstItem="tli-mE-3iS" firstAttribute="top" secondItem="3" secondAttribute="top" constant="20" symbolic="YES" type="default" id="oeT-4g-7Nt"/>
+                            <constraint firstAttribute="bottom" secondItem="pXW-Bk-Zt6" secondAttribute="bottom" constant="20" symbolic="YES" type="default" id="tyd-Yj-pIp"/>
                         </constraints>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="gLl-Jn-GNn" appends="YES" id="sqI-48-Dik"/>
                             <outletCollection property="gestureRecognizers" destination="6cP-Fr-lE8" appends="YES" id="U9h-ur-6e0"/>
                             <outletCollection property="gestureRecognizers" destination="5DF-hC-ZOJ" appends="YES" id="47D-s1-One"/>
-                            <outletCollection property="gestureRecognizers" destination="3b6-TI-0mv" appends="YES" id="jdT-2r-zMt"/>
                         </connections>
                     </view>
                     <connections>
@@ -70,7 +86,6 @@
                     </connections>
                 </panGestureRecognizer>
                 <pinchGestureRecognizer id="5DF-hC-ZOJ"/>
-                <swipeGestureRecognizer direction="right" id="3b6-TI-0mv"/>
                 <tapGestureRecognizer id="6cP-Fr-lE8">
                     <connections>
                         <action selector="handleTap:" destination="2" id="r14-Iz-JYB"/>
@@ -80,6 +95,21 @@
             <point key="canvasLocation" x="-499" y="234"/>
         </scene>
     </scenes>
+    <classes>
+        <class className="NSLayoutConstraint" superclassName="NSObject">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/NSLayoutConstraint.h"/>
+        </class>
+        <class className="TUTViewController" superclassName="GLKViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/TUTViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="handlePan:" candidateClass="UIPanGestureRecognizer"/>
+                <relationship kind="action" name="handleTap:" candidateClass="UITapGestureRecognizer"/>
+                <relationship kind="action" name="switchMSAA:" candidateClass="UISwitch"/>
+                <relationship kind="outlet" name="labelFPS" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="labelFPS2" candidateClass="UILabel"/>
+            </relationships>
+        </class>
+    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <nil key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

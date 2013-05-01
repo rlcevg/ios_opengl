@@ -296,6 +296,14 @@ typedef void (*GLLogFunction)(GLuint program, GLsizei bufsize, GLsizei* length, 
     [self setUniform:name x:v.x y:v.y z:v.z];
 }
 
+- (void)setUniform:(const GLchar *)name vec2:(GLKVector2)v
+{
+    GLint loc = [self getUniformLocation:name];
+    if (loc >= 0) {
+        glUniform2f(loc, v.x, v.y);
+    }
+}
+
 - (void)setUniform:(const GLchar *)name vec4:(GLKVector4)v
 {
     GLint loc = [self getUniformLocation:name];

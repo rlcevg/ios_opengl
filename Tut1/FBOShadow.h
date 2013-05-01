@@ -21,5 +21,6 @@
 @property (assign, nonatomic, getter=isEnabled) BOOL enabled;
 @property (assign, nonatomic, readonly) GLuint name;
 @property (assign, nonatomic, readonly) GLenum target;
+@property (assign, nonatomic, readonly) GLKVector2 texelSize;
 
 @end
