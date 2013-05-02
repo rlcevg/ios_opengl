@@ -32,11 +32,6 @@ GLfloat kernel5[5];
     return self;
 }
 
-+ (float)gaussian:(float)x deviation:(float)deviation
-{
-    return (1.0 / sqrt(2.0 * 3.141592 * deviation)) * exp(-((x * x) / (2.0 * deviation)));
-}
-
 + (GLfloat *)kernel5
 {
     static BOOL calculated = NO;

@@ -8,12 +8,13 @@
 
 #import "Effect.h"
 #import "Drawable.h"
-@class Light;
+@class Light, GLSLProgram;
 
 @interface FBOShadow : NSObject <Effect>
 
 - (id)initWithWidth:(GLsizei)width andHeight:(GLsizei)height;
 - (void)prepareToDraw:(id<Drawable>)object;
+- (void)blur;
 
 + (GLKMatrix4)shadowBias;
 
@@ -22,5 +23,6 @@
 @property (assign, nonatomic, readonly) GLuint name;
 @property (assign, nonatomic, readonly) GLenum target;
 @property (assign, nonatomic, readonly) GLKVector2 texelSize;
+@property (strong, nonatomic, readonly) GLSLProgram *programBlur;
 
 @end

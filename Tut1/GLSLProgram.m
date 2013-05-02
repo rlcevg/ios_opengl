@@ -312,6 +312,14 @@ typedef void (*GLLogFunction)(GLuint program, GLsizei bufsize, GLsizei* length, 
     }
 }
 
+- (void)setUniform:(const GLchar *)name vec:(GLfloat *)v count:(int)count
+{
+    GLint loc = [self getUniformLocation:name];
+    if (loc >= 0) {
+        glUniform1fv(loc, count, v);
+    }
+}
+
 - (void)setUniform:(const GLchar *)name mat3:(GLKMatrix3)m
 {
     GLint loc = [self getUniformLocation:name];

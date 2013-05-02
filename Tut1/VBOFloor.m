@@ -20,7 +20,7 @@ typedef struct {
 
 @interface VBOFloor () {
     GLuint _vaoHandle;
-    GLuint _handle[3];
+    GLuint _handle[2];
     unsigned int _faces;
 }
 @property (strong, nonatomic) GLKTextureInfo *texture;
@@ -89,7 +89,7 @@ typedef struct {
             }
         }
 
-        glGenBuffers(3, _handle);
+        glGenBuffers(2, _handle);
 
         glBindBuffer(GL_ARRAY_BUFFER, _handle[0]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * (xdivs + 1) * (zdivs + 1), vertices, GL_STATIC_DRAW);
@@ -117,7 +117,7 @@ typedef struct {
 {
     self.texture = nil;
 
-	glDeleteBuffers(3, _handle);
+	glDeleteBuffers(2, _handle);
 	glDeleteVertexArraysOES(1, &_vaoHandle);
 }
 

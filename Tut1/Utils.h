@@ -10,6 +10,8 @@
 #define Tut1_Utils_h
 
 #define BUFFER_OFFSET(i) ((GLubyte *)NULL + (i))
-#define TWOPI (2 * M_PI)
+#define TWOPI (2.0 * M_PI)
+
+float gaussian(float x, float deviation);
 
 #endif

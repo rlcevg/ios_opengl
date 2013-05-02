@@ -9,19 +9,27 @@
 #import "FBOShadow.h"
 #import "GLSLProgram.h"
 #import "Light.h"
+#import "Utils.h"
+
+#define COLOR_TEX 0
+#define BLUR_COLOR_TEX 1
+#define SHADOW_FBO 0
+#define BLUR_FBO 1
+#define BLUR_COEF 1
 
 #pragma mark
 
 @interface FBOShadow () {
-    GLuint _handle;
-    GLuint _depthTex;
-    GLuint _colorRBO;
+    GLuint _fbos[2];
+    GLuint _rboDepth;
+    GLuint _textures[2];
+    GLuint _quadArray;
+    GLuint _quadBuffer;
 }
 @property (strong, nonatomic) GLSLProgram *program;
+@property (strong, nonatomic) GLSLProgram *programBlur;
 @property (assign, nonatomic) GLsizei width;
 @property (assign, nonatomic) GLsizei height;
-@property (assign, nonatomic) GLuint name;
-@property (assign, nonatomic) GLenum target;
 
 @end
 
@@ -30,7 +38,6 @@
 @implementation FBOShadow
 
 @synthesize program = _program;
-@synthesize name = _depthTex;
 
 - (id)init
 {
@@ -39,53 +46,85 @@
 
 - (id)initWithWidth:(GLsizei)width andHeight:(GLsizei)height
 {
-#if defined(GL_OES_depth_texture)
     if (self = [super init]) {
         _program = nil;
+        _programBlur = nil;
         _width = width;
         _height = height;
         _light = nil;
         _target = GL_TEXTURE_2D;
 
-        // Assign the shadow map to texture channel 0
-        glActiveTexture(GL_TEXTURE0);
+        glGenTextures(2, _textures);
+        glGenFramebuffers(2, _fbos);
 
-        glGenTextures(1, &_depthTex);
-        glBindTexture(GL_TEXTURE_2D, _depthTex);
+        // Create depth renderbuffer
+        glGenRenderbuffers(1, &_rboDepth);
+        glBindRenderbuffer(GL_RENDERBUFFER, _rboDepth);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24_OES, width, height);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  // GL_NEAREST GL_LINEAR
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);  // GL_NEAREST GL_LINEAR
+        // Create moment1-moment2 texture
+        glBindTexture(GL_TEXTURE_2D, _textures[COLOR_TEX]);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//        glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_EXT, GL_COMPARE_REF_TO_TEXTURE_EXT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC_EXT, GL_LEQUAL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RG_EXT, width, height, 0, GL_RG_EXT, GL_HALF_FLOAT_OES, NULL);
+//        glGenerateMipmap(GL_TEXTURE_2D);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+        // Create and set up the depth FBO
+        glBindFramebuffer(GL_FRAMEBUFFER, _fbos[SHADOW_FBO]);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _rboDepth);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textures[COLOR_TEX], 0);
 
-        // Create and set up the FBO
-        glGenFramebuffers(1, &_handle);
-        glBindFramebuffer(GL_FRAMEBUFFER, _handle);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                               GL_TEXTURE_2D, _depthTex, 0);
-
-        // GLenum drawBuffers[] = {GL_NONE};
-        // glDrawBuffers(1, drawBuffers); or glDrawBuffer(GL_NONE);
-        // But OpenGL ES 2.0 doesn't have them.
-        // As workaround just don't create render color-buffer or attach one
-
-        GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-        if (result != GL_FRAMEBUFFER_COMPLETE) {
-            NSLog(@"Framebuffer is not complete: %x", result);
-            self = nil;
+        GLenum fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
+            NSLog(@"Depth framebuffer is not complete: %x", fboStatus);
+            return nil;
         }
 
-        // Revert to the default framebuffer for now
+        // Create blur color texture
+        glBindTexture(GL_TEXTURE_2D, _textures[BLUR_COLOR_TEX]);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RG_EXT, width >> BLUR_COEF, height >> BLUR_COEF, 0, GL_RG_EXT, GL_HALF_FLOAT_OES, 0);
+
+        // Creating the blur FBO
+        glBindFramebuffer(GL_FRAMEBUFFER, _fbos[BLUR_FBO]);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textures[BLUR_COLOR_TEX], 0);
+
+        fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
+            NSLog(@"Blur framebuffer is not complete: %x", fboStatus);
+            return nil;
+        }
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // Create quad data
+        static GLKVector2 data[4] = {
+            {0.0, 0.0},
+            {1.0, 0.0},
+            {0.0, 1.0},
+            {1.0, 1.0}
+        };
+        glGenVertexArraysOES(1, &_quadArray);
+        glBindVertexArrayOES(_quadArray);
+
+        glGenBuffers(1, &_quadBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, _quadBuffer);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
+
+        glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+        glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLKVector2), BUFFER_OFFSET(0));
+        glBindVertexArrayOES(0);
     }
-#else
-    self = nil;
-#endif
     return self;
 }
 
@@ -93,9 +132,11 @@
 {
     self.program = nil;
 
-    glDeleteRenderbuffers(1, &_colorRBO);
-    glDeleteFramebuffers(1, &_handle);
-	glDeleteTextures(1, &_depthTex);
+    glDeleteFramebuffers(2, _fbos);
+	glDeleteTextures(2, _textures);
+    glDeleteRenderbuffers(1, &_rboDepth);
+	glDeleteBuffers(1, &_quadBuffer);
+	glDeleteVertexArraysOES(1, &_quadArray);
 }
 
 - (GLSLProgram *)program
@@ -112,21 +153,40 @@
     return _program;
 }
 
+- (GLSLProgram *)programBlur
+{
+    if (!_programBlur) {
+        _programBlur = [GLSLProgram new];
+        NSDictionary *attrs = @{
+            [NSNumber numberWithInteger:GLKVertexAttribTexCoord0] : @"texCoordVertex",
+        };
+        if (![_programBlur loadShaders:@"Blur" withAttrs:attrs]) {
+            [_programBlur printLog];
+        }
+    }
+    return _programBlur;
+}
+
 - (void)setEnabled:(BOOL)enabled
 {
     if (_enabled != enabled) {
         if (enabled) {
-            glBindFramebuffer(GL_FRAMEBUFFER, _handle);
-            glClear(GL_DEPTH_BUFFER_BIT);
+            glBindFramebuffer(GL_FRAMEBUFFER, _fbos[SHADOW_FBO]);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glViewport(0, 0, _width, _height);
             glCullFace(GL_FRONT);
-            glEnable(GL_POLYGON_OFFSET_FILL);
+//            glEnable(GL_POLYGON_OFFSET_FILL);
         } else {
-            glDisable(GL_POLYGON_OFFSET_FILL);
+//            glDisable(GL_POLYGON_OFFSET_FILL);
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
         _enabled = enabled;
     }
+}
+
+- (GLuint)name
+{
+    return _textures[COLOR_TEX];
 }
 
 - (GLKVector2)texelSize
@@ -144,6 +204,42 @@
         GLKMatrix4 modelViewProjectionMatrix = GLKMatrix4Multiply(self.light.projectionMatrix, modelviewMatrix);
         [program setUniform:"modelViewProjectionMatrix" mat4:modelViewProjectionMatrix];
     }
+}
+
+- (void)blur
+{
+    static GLfloat gaussCoef[9] = {
+        0.01621622, 0.05405405, 0.12162162, 0.19459459,
+        0.22702703,
+        0.19459459, 0.12162162, 0.05405405, 0.01621622
+    };
+
+    GLSLProgram *program = self.programBlur;
+    [program use];
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _textures[COLOR_TEX]);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glDisable(GL_DEPTH_TEST);
+    glCullFace(GL_BACK);
+    [program setUniform:"textureSource" valInt:0];
+    [program setUniform:"coefficients" vec:gaussCoef count:9];
+
+    glBindFramebuffer(GL_FRAMEBUFFER, _fbos[BLUR_FBO]);
+    glViewport(0, 0, _width >> BLUR_COEF, _height >> BLUR_COEF);
+    [program setUniform:"direction" valBool:YES];
+    [program setUniform:"scale" valFloat:1.0 / (_width >> BLUR_COEF)];
+    glBindVertexArrayOES(_quadArray);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    glBindTexture(GL_TEXTURE_2D, _textures[BLUR_COLOR_TEX]);
+    glBindFramebuffer(GL_FRAMEBUFFER, _fbos[SHADOW_FBO]);
+    glViewport(0, 0, _width, _height);
+    [program setUniform:"direction" valBool:NO];
+    [program setUniform:"scale" valFloat:1.0 / _height];
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    glEnable(GL_DEPTH_TEST);
 }
 
 + (GLKMatrix4)shadowBias

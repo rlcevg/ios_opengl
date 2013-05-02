@@ -4,7 +4,7 @@ varying vec3 normal;
 varying vec4 color;
 varying vec4 shadowCoord;
 
-uniform sampler2DShadow shadowMap;
+uniform sampler2D shadowMap;
 
 struct LightInfo {
     vec4 position;
@@ -39,28 +39,55 @@ float mapLinear(float fVal, float sMin, float sMax)
     return clamp(fVal * (sMax - sMin) + sMin, 0.0, 1.0);
 }
 
-float lookup(vec2 offSet)
+float reduceLightBleeding(float p_t, float aggressiveness)
 {
-    // Values are multiplied by ShadowCoord.w because shadow2DProj does a W division for us.
-	return shadow2DProjEXT(shadowMap, shadowCoord + vec4(offSet.x * texelSize.x * shadowCoord.w, offSet.y * texelSize.y * shadowCoord.w, 0.005, 0.0));
+    return max(0.0, (p_t - aggressiveness) / (1.0 - aggressiveness));
 }
+
+float chebyshevUpperBound(float distance, vec2 offset)
+{
+    vec2 moments = texture2D(shadowMap, offset).rg;
+
+    // Surface is fully lit. as the current fragment is before the light occluder
+    if (distance <= moments.x)
+        return 1.0;
+
+    // The fragment is either in shadow or penumbra. We now use chebyshev's upperBound to check
+    // How likely this pixel is to be lit (p_max)
+    float variance = moments.y - (moments.x * moments.x);
+    variance = max(variance, 0.00002);
+
+    float d = distance - moments.x;
+    float p_max = variance / (variance + d * d);
+
+    return reduceLightBleeding(p_max, 0.2);
+}
+
+//float lookup(vec2 offset)
+//{
+//    // Values are multiplied by ShadowCoord.w because shadow2DProj does a W division for us.
+//	return shadow2DProjEXT(shadowMap, shadowCoord + vec4(offset.x * texelSize.x * shadowCoord.w, offset.y * texelSize.y * shadowCoord.w, 0.005, 0.0));
+//}
 
 vec4 shadowedColor(void)
 {
     // Do the shadow-map look-up
 //    float shadow = shadow2DProjEXT(shadowMap, shadowCoord);
-    float shadow = 1.0;
-    if (shadowCoord.w > 1.0) {
-        float x, y;
-        for (y = -1.5; y <= 1.5; y += 1.0)
-            for (x = -1.5; x <= 1.5; x += 1.0)
-                shadow += lookup(vec2(x, y));
-        shadow /= 16.0;
-    }
+//    float shadow = 1.0;
+//    if (shadowCoord.w > 1.0) {
+//        float x, y;
+//        for (y = -1.5; y <= 1.5; y += 1.0)
+//            for (x = -1.5; x <= 1.5; x += 1.0)
+//                shadow += lookup(vec2(x, y));
+//        shadow /= 16.0;
+//    }
 
-    float shadowZ = shadowCoord.z / shadowCoord.w;
+    vec4 shadowCoordPostW = shadowCoord / shadowCoord.w;
+    float shadow = chebyshevUpperBound(shadowCoordPostW.z, shadowCoordPostW.xy);
+
+//    float shadowZ = shadowCoord.z / shadowCoord.w;
     // mapLinear(shadowZ, -1.0, 1.0)
-    shadow = clamp(shadow + mapLinear(shadowZ, -10.0, 0.9), 0.1, 1.0);
+//    shadow = clamp(shadow + mapLinear(shadowZ, -10.0, 0.9), 0.1, 1.0);
 
     vec3 emissive = material.Ke;
     vec3 ambient = light.intensity * material.Ka;

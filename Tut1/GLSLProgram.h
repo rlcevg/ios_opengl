@@ -32,6 +32,7 @@
 - (void)setUniform:(const GLchar *)name vec2:(GLKVector2)v;
 - (void)setUniform:(const GLchar *)name vec3:(GLKVector3)v;
 - (void)setUniform:(const GLchar *)name vec4:(GLKVector4)v;
+- (void)setUniform:(const GLchar *)name vec:(GLfloat *)v count:(int)count;
 - (void)setUniform:(const GLchar *)name mat3:(GLKMatrix3)m;
 - (void)setUniform:(const GLchar *)name mat4:(GLKMatrix4)m;
 - (void)setUniform:(const GLchar *)name valFloat:(float)val;
