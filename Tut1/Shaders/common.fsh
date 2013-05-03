@@ -83,10 +83,13 @@ vec4 shadowedColor(void)
 //    }
 
     float shadow = 1.0;
-    if (shadowCoord.w > 1.0) {
+    if (shadowCoord.w > 0.0) {
         vec4 shadowCoordPostW = shadowCoord / shadowCoord.w;
-        shadow = chebyshevUpperBound(shadowCoordPostW.z, shadowCoordPostW.xy);
-        shadow = clamp(shadow + mapLinear(shadowCoordPostW.z, -20.0, 0.9), 0.1, 1.0);
+        if ((shadowCoordPostW.x >= 0.0) && (shadowCoordPostW.x <= 1.0) &&
+            (shadowCoordPostW.y >= 0.0) && (shadowCoordPostW.y <= 1.0)) {
+            shadow = chebyshevUpperBound(shadowCoordPostW.z, shadowCoordPostW.xy);
+            shadow = clamp(shadow + mapLinear(shadowCoordPostW.z, -20.0, 0.9), 0.1, 1.0);
+        }
     }
 
     vec3 emissive = material.Ke;

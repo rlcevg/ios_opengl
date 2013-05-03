@@ -230,6 +230,7 @@
 
 //    [prog use];
 //    [prog setUniform:"modelViewProjectionMatrix" mat4:GLKMatrix4Identity];
+//    glActiveTexture(GL_TEXTURE0);
 //    glBindTexture(GL_TEXTURE_2D, self.light.shadow.name);
 //    glDisable(GL_CULL_FACE);
 //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

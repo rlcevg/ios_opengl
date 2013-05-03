@@ -8,7 +8,7 @@ uniform sampler2D depthSampler; // 0
 float linearizeDepth(vec2 uv)
 {
     float n = 1.0; // camera z near
-    float f = 100.0; // camera z far
+    float f = 20.0; // camera z far
     float z = texture2D(depthSampler, uv).r;
     return (2.0 * n) / (f + n - z * (f - n));
 }
