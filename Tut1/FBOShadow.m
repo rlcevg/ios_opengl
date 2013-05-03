@@ -65,6 +65,9 @@
         // Create moment1-moment2 texture
         glBindTexture(GL_TEXTURE_2D, _textures[COLOR_TEX]);
 
+        GLfloat fLargest;
+        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &fLargest);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, fLargest);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 //        glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
@@ -160,7 +163,7 @@
         NSDictionary *attrs = @{
             [NSNumber numberWithInteger:GLKVertexAttribTexCoord0] : @"texCoordVertex",
         };
-        if (![_programBlur loadShaders:@"Blur" withAttrs:attrs]) {
+        if (![_programBlur loadShaders:@"Blur7" withAttrs:attrs]) {
             [_programBlur printLog];
         }
     }
@@ -174,7 +177,7 @@
             glBindFramebuffer(GL_FRAMEBUFFER, _fbos[SHADOW_FBO]);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glViewport(0, 0, _width, _height);
-            glCullFace(GL_FRONT);
+//            glCullFace(GL_FRONT);
 //            glEnable(GL_POLYGON_OFFSET_FILL);
         } else {
 //            glDisable(GL_POLYGON_OFFSET_FILL);
@@ -208,12 +211,6 @@
 
 - (void)blur
 {
-    static GLfloat gaussCoef[9] = {
-        0.01621622, 0.05405405, 0.12162162, 0.19459459,
-        0.22702703,
-        0.19459459, 0.12162162, 0.05405405, 0.01621622
-    };
-
     GLSLProgram *program = self.programBlur;
     [program use];
 
@@ -221,9 +218,8 @@
     glBindTexture(GL_TEXTURE_2D, _textures[COLOR_TEX]);
     glGenerateMipmap(GL_TEXTURE_2D);
     glDisable(GL_DEPTH_TEST);
-    glCullFace(GL_BACK);
+//    glCullFace(GL_BACK);
     [program setUniform:"textureSource" valInt:0];
-    [program setUniform:"coefficients" vec:gaussCoef count:9];
 
     glBindFramebuffer(GL_FRAMEBUFFER, _fbos[BLUR_FBO]);
     glViewport(0, 0, _width >> BLUR_COEF, _height >> BLUR_COEF);
@@ -239,6 +235,8 @@
     [program setUniform:"scale" valFloat:1.0 / _height];
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+    glBindTexture(GL_TEXTURE_2D, _textures[COLOR_TEX]);
+    glGenerateMipmap(GL_TEXTURE_2D);
     glEnable(GL_DEPTH_TEST);
 }
 

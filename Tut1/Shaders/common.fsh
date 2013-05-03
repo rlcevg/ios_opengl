@@ -55,12 +55,12 @@ float chebyshevUpperBound(float distance, vec2 offset)
     // The fragment is either in shadow or penumbra. We now use chebyshev's upperBound to check
     // How likely this pixel is to be lit (p_max)
     float variance = moments.y - (moments.x * moments.x);
-    variance = max(variance, 0.00002);
+    variance = max(variance, 0.002);
 
     float d = distance - moments.x;
     float p_max = variance / (variance + d * d);
 
-    return reduceLightBleeding(p_max, 0.2);
+    return reduceLightBleeding(p_max, 0.7);
 }
 
 //float lookup(vec2 offset)
@@ -82,12 +82,12 @@ vec4 shadowedColor(void)
 //        shadow /= 16.0;
 //    }
 
-    vec4 shadowCoordPostW = shadowCoord / shadowCoord.w;
-    float shadow = chebyshevUpperBound(shadowCoordPostW.z, shadowCoordPostW.xy);
-
-//    float shadowZ = shadowCoord.z / shadowCoord.w;
-    // mapLinear(shadowZ, -1.0, 1.0)
-//    shadow = clamp(shadow + mapLinear(shadowZ, -10.0, 0.9), 0.1, 1.0);
+    float shadow = 1.0;
+    if (shadowCoord.w > 1.0) {
+        vec4 shadowCoordPostW = shadowCoord / shadowCoord.w;
+        shadow = chebyshevUpperBound(shadowCoordPostW.z, shadowCoordPostW.xy);
+        shadow = clamp(shadow + mapLinear(shadowCoordPostW.z, -20.0, 0.9), 0.1, 1.0);
+    }
 
     vec3 emissive = material.Ke;
     vec3 ambient = light.intensity * material.Ka;
