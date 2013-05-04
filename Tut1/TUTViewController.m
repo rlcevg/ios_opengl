@@ -14,13 +14,17 @@
 #import "Light.h"
 #import "FBOShadow.h"
 #import "SceneEffect.h"
+
+#pragma mark - Debug
 #import "GLSLProgram.h"
+#import "VBOScreenQuad.h"
 
 #pragma mark
 
 @interface TUTViewController () {
     GLuint _vertexArray, _vertexBuffer;
     GLSLProgram *prog;
+    VBOScreenQuad *quad;
     float _rotation;
 }
 @property (strong, nonatomic) EAGLContext *context;
@@ -140,33 +144,9 @@
 
 #pragma mark - Debug
 
-    typedef struct {
-        GLKVector3 vert;
-        GLKVector2 tex;
-    } dataDebug;
-    static dataDebug data[4] = {
-        {{-1.0, -1.0, 0.0}, {0.0, 0.0}},
-        {{1.0, -1.0, 0.0}, {1.0, 0.0}},
-        {{-1.0, 1.0, 0.0}, {0.0, 1.0}},
-        {{1.0, 1.0, 0.0}, {1.0, 1.0}}
-    };
-    glGenVertexArraysOES(1, &_vertexArray);
-    glBindVertexArrayOES(_vertexArray);
-
-    glGenBuffers(1, &_vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(dataDebug), (const GLvoid *)offsetof(dataDebug, vert));
-    glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
-    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(dataDebug), (const GLvoid *)offsetof(dataDebug, tex));
-    NSLog(@"%x", glGetError());
-
-    glBindVertexArrayOES(0);
+    quad = [VBOScreenQuad new];
     prog = [GLSLProgram new];
     NSDictionary *attr = @{
-        [NSNumber numberWithInteger:GLKVertexAttribPosition] : @"positionVertex",
         [NSNumber numberWithInteger:GLKVertexAttribTexCoord0] : @"texCoordVertex",
     };
     if (![prog loadShaders:@"DebugShadow" withAttrs:attr]) {
@@ -235,8 +215,7 @@
 //    glGenerateMipmap(GL_TEXTURE_2D);
 //    glDisable(GL_CULL_FACE);
 //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//    glBindVertexArrayOES(_vertexArray);
-//    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+//    [quad render];
 //    glCullFace(GL_BACK);
 
     // Pass 2 (render)

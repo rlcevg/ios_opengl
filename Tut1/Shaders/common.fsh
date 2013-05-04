@@ -69,11 +69,13 @@ float chebyshevUpperBound(vec2 moments, float t, float minVariance)
 //	return shadow2DProjEXT(shadowMap, shadowCoord + vec4(offset.x * texelSize.x * shadowCoord.w, offset.y * texelSize.y * shadowCoord.w, 0.005, 0.0));
 //}
 
-float recombinePrecision(vec2 value)
+vec2 recombinePrecision(vec4 value)
 {
-    const float distributeFactor = 2048.0;  // see Shadow.fsh
-    const float factorInv = 1.0 / distributeFactor;
-    return dot(value, vec2(1.0, factorInv));
+    // see Shadow.fsh
+    #define DISTRIBUTE_FACTOR (2048.0)
+    #define FACTOR_INV (1.0 / DISTRIBUTE_FACTOR)
+
+    return vec2(dot(value.xz, vec2(1.0, FACTOR_INV)), dot(value.yw, vec2(1.0, FACTOR_INV)));
 }
 
 float esmShadow(vec2 offset)
@@ -97,35 +99,32 @@ float esmShadow(vec2 offset)
 
 float evsmShadow(vec2 offset)
 {
-    #define g_ExpWarp_C 2.0
-    #define g_VSMMinVariance 0.002
-    float depth = 2.0 * distance(position, light.position.xyz) * linearDepthConstant - 1.0;
+    #define EXP_WARP_C 5.0
+    #define VSM_MIN_VARIANCE 0.00002
 
-    float posDepth =  exp( g_ExpWarp_C * depth);
-    float negDepth = -exp(-g_ExpWarp_C * depth);
+//    float depth_receiver = 2.0 * distance(position, light.position.xyz) * linearDepthConstant - 1.0;
+    float depth_receiver = distance(position, light.position.xyz) * linearDepthConstant;
+
+    float posDepth =  exp( EXP_WARP_C * depth_receiver);
+//    float negDepth = -exp(-EXP_WARP_C * depth_receiver);
 
     vec4 data = texture2D(shadowMap, offset);
-    vec2 posMoments = data.xy;
-    vec2 negMoments = data.zw;
+//    vec2 posMoments = data.xy;
+    vec2 posMoments = recombinePrecision(data);
+//    vec2 negMoments = data.zw;
 
     // derivative of warping at Depth
     // TODO: Make this faster and less awkward/redundant...
-    float posDepthScale = g_ExpWarp_C * posDepth;
-//    float posDepthScale = posDepth;
-    float posMinVariance = g_VSMMinVariance * (posDepthScale * posDepthScale);
+    float posDepthScale = EXP_WARP_C * posDepth;
+    float posMinVariance = VSM_MIN_VARIANCE * (posDepthScale * posDepthScale);
     float posShadowContrib = chebyshevUpperBound(posMoments, posDepth, posMinVariance);
 
-    float negDepthScale = g_ExpWarp_C * negDepth;
-//    float negDepthScale = negDepth;
-    float negMinVariance = g_VSMMinVariance * (negDepthScale * negDepthScale);
-    float negShadowContrib = chebyshevUpperBound(negMoments, negDepth, negMinVariance);
+//    float negDepthScale = EXP_WARP_C * negDepth;
+//    float negMinVariance = VSM_MIN_VARIANCE * (negDepthScale * negDepthScale);
+//    float negShadowContrib = chebyshevUpperBound(negMoments, negDepth, negMinVariance);
 
-    //float shadowContrib = posShadowContrib;
-    //float shadowContrib = negShadowContrib;
-    float shadowContrib = min(posShadowContrib, negShadowContrib);
-    //float shadowContrib = sqrt(posShadowContrib * negShadowContrib);
-
-    return shadowContrib;
+//    return min(posShadowContrib, negShadowContrib);
+    return posShadowContrib;
 }
 
 vec4 shadowedColor(void)

@@ -1,14 +1,11 @@
 #version 100
 
-attribute vec4 positionVertex;
 attribute vec2 texCoordVertex;
-
-uniform mat4 modelViewProjectionMatrix;
 
 varying vec2 texCoord;
 
 void main()
 {
+    gl_Position = vec4(texCoordVertex * 2.0 - 1.0, 0.0, 1.0);
     texCoord = texCoordVertex;
-	gl_Position = modelViewProjectionMatrix * positionVertex;
 }

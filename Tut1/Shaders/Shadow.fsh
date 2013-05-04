@@ -5,33 +5,32 @@ precision highp float;
 varying float linearDepth;
 
 // encoding: value = [0..1]
-vec2 distributePrecision(float value)
+vec4 distributePrecision(vec2 value)
 {
-    const float distributeFactor = 2048.0;  // 2048=2^11, 11-bit precision; 256 - 8-bit
-    const float factorInv = 1.0 / distributeFactor;
+    // 2048=2^11, 11-bit precision; 256 - 8-bit
+    #define DISTRIBUTE_FACTOR (2048.0)
+    #define FACTOR_INV (1.0 / DISTRIBUTE_FACTOR)
 
-    float scaled_value = value * distributeFactor;
-    return vec2(floor(scaled_value) * factorInv, fract(scaled_value));
+    vec2 scaled_value = value * DISTRIBUTE_FACTOR;
+    return vec4(floor(scaled_value) * FACTOR_INV, fract(scaled_value));
 }
 
 vec2 computeMoments(float depth)
 {
-//    float depth = v_position.z / v_position.w;
-//    depth = depth * 0.5 + 0.5;  // move away from unit cube ([-1,1]) to [0,1] coordinate system
-
-    float moment1 = depth;
     float moment2 = depth * depth;
 
     // Adjusting moments (this is sort of bias per pixel) using derivative
-    float dx = dFdx(depth);
-    float dy = dFdy(depth);
-    moment2 += 0.25 * (dx * dx + dy * dy);
+    vec2 dxdy = vec2(dFdx(depth), dFdy(depth));
+    // moment2 += 0.25 * (dx * dx + dy * dy);
+    moment2 += 0.25 * dot(dxdy, dxdy);
 
-    return vec2(moment1, moment2);
+    return vec2(depth, moment2);
 }
 
 void main()
 {
-    #define g_ExpWarp_C 2.0
-    gl_FragColor = vec4(computeMoments(exp(g_ExpWarp_C * linearDepth)), computeMoments(-exp(-g_ExpWarp_C * linearDepth)));
+    #define g_ExpWarp_C 5.0
+//    gl_FragColor = vec4(computeMoments(exp(g_ExpWarp_C * linearDepth)), computeMoments(-exp(-g_ExpWarp_C * linearDepth)));
+    vec2 moments = computeMoments(exp(g_ExpWarp_C * linearDepth));
+    gl_FragColor = distributePrecision(moments);
 }

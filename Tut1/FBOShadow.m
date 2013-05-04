@@ -9,7 +9,7 @@
 #import "FBOShadow.h"
 #import "GLSLProgram.h"
 #import "Light.h"
-#import "Utils.h"
+#import "VBOScreenQuad.h"
 
 #define DEPTH_DATA_TEX0 0
 #define DEPTH_DATA_TEX1 1
@@ -23,13 +23,12 @@
     GLuint _fbos[2];
     GLuint _rboDepth;
     GLuint _textures[2];
-    GLuint _quadArray;
-    GLuint _quadBuffer;
 }
 @property (strong, nonatomic) GLSLProgram *program;
 @property (strong, nonatomic) GLSLProgram *programBlur;
 @property (assign, nonatomic) GLsizei width;
 @property (assign, nonatomic) GLsizei height;
+@property (strong, nonatomic) VBOScreenQuad *quad;
 
 @end
 
@@ -47,6 +46,7 @@
 - (id)initWithWidth:(GLsizei)width andHeight:(GLsizei)height
 {
     if (self = [super init]) {
+        _quad = [VBOScreenQuad new];
         _program = nil;
         _programBlur = nil;
         _width = width;
@@ -70,12 +70,10 @@
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, fLargest);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//        glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_HALF_FLOAT_OES, NULL);
-//        glGenerateMipmap(GL_TEXTURE_2D);
 
         // Create and set up the depth FBO
         glBindFramebuffer(GL_FRAMEBUFFER, _fbos[SHADOW_FBO]);
@@ -109,24 +107,6 @@
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        // Create quad data
-        static GLKVector2 data[4] = {
-            {0.0, 0.0},
-            {1.0, 0.0},
-            {0.0, 1.0},
-            {1.0, 1.0}
-        };
-        glGenVertexArraysOES(1, &_quadArray);
-        glBindVertexArrayOES(_quadArray);
-
-        glGenBuffers(1, &_quadBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, _quadBuffer);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
-
-        glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
-        glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLKVector2), BUFFER_OFFSET(0));
-        glBindVertexArrayOES(0);
     }
     return self;
 }
@@ -134,12 +114,12 @@
 - (void)dealloc
 {
     self.program = nil;
+    self.programBlur = nil;
+    self.quad = nil;
 
     glDeleteFramebuffers(2, _fbos);
 	glDeleteTextures(2, _textures);
     glDeleteRenderbuffers(1, &_rboDepth);
-	glDeleteBuffers(1, &_quadBuffer);
-	glDeleteVertexArraysOES(1, &_quadArray);
 }
 
 - (GLSLProgram *)program
@@ -228,15 +208,14 @@
     glViewport(0, 0, _width >> BLUR_COEF, _height >> BLUR_COEF);
     [program setUniform:"direction" valBool:YES];
     [program setUniform:"scale" valFloat:1.0 / (_width >> BLUR_COEF)];
-    glBindVertexArrayOES(_quadArray);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    [self.quad render];
 
     glBindTexture(GL_TEXTURE_2D, _textures[DEPTH_DATA_TEX1]);
     glBindFramebuffer(GL_FRAMEBUFFER, _fbos[SHADOW_FBO]);
     glViewport(0, 0, _width, _height);
     [program setUniform:"direction" valBool:NO];
     [program setUniform:"scale" valFloat:1.0 / _height];
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    [self.quad render];
 
     glBindTexture(GL_TEXTURE_2D, _textures[DEPTH_DATA_TEX0]);
     glGenerateMipmap(GL_TEXTURE_2D);
