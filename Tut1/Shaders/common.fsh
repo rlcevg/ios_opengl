@@ -45,23 +45,22 @@ float reduceLightBleeding(float p_t, float aggressiveness)
     return max(0.0, (p_t - aggressiveness) / (1.0 - aggressiveness));
 }
 
-float chebyshevUpperBound(float distance, vec2 offset)
+float chebyshevUpperBound(vec2 moments, float t, float minVariance)
 {
-    vec2 moments = texture2D(shadowMap, offset).rg;
-
     // Surface is fully lit. as the current fragment is before the light occluder
-    if (distance <= moments.x)
+    if (t <= moments.x)
         return 1.0;
 
     // The fragment is either in shadow or penumbra. We now use chebyshev's upperBound to check
     // How likely this pixel is to be lit (p_max)
     float variance = moments.y - (moments.x * moments.x);
-    variance = max(variance, 0.002);
+    variance = max(variance, 0.00002);
 
-    float d = distance - moments.x;
+    float d = t - moments.x;
     float p_max = variance / (variance + d * d);
 
-    return reduceLightBleeding(p_max, 0.7);
+    return p_max;
+//    return reduceLightBleeding(p_max, 0.7);
 }
 
 //float lookup(vec2 offset)
@@ -96,6 +95,39 @@ float esmShadow(vec2 offset)
 //    return shadow;
 }
 
+float evsmShadow(vec2 offset)
+{
+    #define g_ExpWarp_C 2.0
+    #define g_VSMMinVariance 0.002
+    float depth = 2.0 * distance(position, light.position.xyz) * linearDepthConstant - 1.0;
+
+    float posDepth =  exp( g_ExpWarp_C * depth);
+    float negDepth = -exp(-g_ExpWarp_C * depth);
+
+    vec4 data = texture2D(shadowMap, offset);
+    vec2 posMoments = data.xy;
+    vec2 negMoments = data.zw;
+
+    // derivative of warping at Depth
+    // TODO: Make this faster and less awkward/redundant...
+    float posDepthScale = g_ExpWarp_C * posDepth;
+//    float posDepthScale = posDepth;
+    float posMinVariance = g_VSMMinVariance * (posDepthScale * posDepthScale);
+    float posShadowContrib = chebyshevUpperBound(posMoments, posDepth, posMinVariance);
+
+    float negDepthScale = g_ExpWarp_C * negDepth;
+//    float negDepthScale = negDepth;
+    float negMinVariance = g_VSMMinVariance * (negDepthScale * negDepthScale);
+    float negShadowContrib = chebyshevUpperBound(negMoments, negDepth, negMinVariance);
+
+    //float shadowContrib = posShadowContrib;
+    //float shadowContrib = negShadowContrib;
+    float shadowContrib = min(posShadowContrib, negShadowContrib);
+    //float shadowContrib = sqrt(posShadowContrib * negShadowContrib);
+
+    return shadowContrib;
+}
+
 vec4 shadowedColor(void)
 {
     // Do the shadow-map look-up
@@ -124,7 +156,7 @@ vec4 shadowedColor(void)
         vec3 shadowCoordPostW = shadowCoord.xyz / shadowCoord.w;
         if ((shadowCoordPostW.x >= 0.0) && (shadowCoordPostW.x <= 1.0) &&
             (shadowCoordPostW.y >= 0.0) && (shadowCoordPostW.y <= 1.0)) {
-            shadow = esmShadow(shadowCoordPostW.xy);
+            shadow = evsmShadow(shadowCoordPostW.xy);
 //            shadow = clamp(shadow + mapLinear(shadowCoordPostW.z, -10.0, 0.9), 0.1, 1.0);
 //            shadow = clamp(shadow + mapLinear(shadowCoordPostW.z, -20.0, 0.9), 0.1, 1.0);
         }

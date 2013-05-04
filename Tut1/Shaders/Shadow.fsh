@@ -1,9 +1,8 @@
 #version 100
+#extension GL_OES_standard_derivatives : enable
 precision highp float;
 
-uniform float linearDepthConstant;  // 1.0 / (Far - Near)
-
-varying vec4 v_position;
+varying float linearDepth;
 
 // encoding: value = [0..1]
 vec2 distributePrecision(float value)
@@ -15,11 +14,24 @@ vec2 distributePrecision(float value)
     return vec2(floor(scaled_value) * factorInv, fract(scaled_value));
 }
 
+vec2 computeMoments(float depth)
+{
+//    float depth = v_position.z / v_position.w;
+//    depth = depth * 0.5 + 0.5;  // move away from unit cube ([-1,1]) to [0,1] coordinate system
+
+    float moment1 = depth;
+    float moment2 = depth * depth;
+
+    // Adjusting moments (this is sort of bias per pixel) using derivative
+    float dx = dFdx(depth);
+    float dy = dFdy(depth);
+    moment2 += 0.25 * (dx * dx + dy * dy);
+
+    return vec2(moment1, moment2);
+}
+
 void main()
 {
-    float linearDepth = length(v_position) * linearDepthConstant;
-//    gl_FragColor = vec4(distributePrecision(linearDepth), 0.0, 0.0);
-    gl_FragColor = vec4(linearDepth);
-//    gl_FragColor = vec4(distributePrecision(exp(linearDepth) / exp(1.0)), 0.0, 0.0);
-//    gl_FragColor = vec4(exp(linearDepth));
+    #define g_ExpWarp_C 2.0
+    gl_FragColor = vec4(computeMoments(exp(g_ExpWarp_C * linearDepth)), computeMoments(-exp(-g_ExpWarp_C * linearDepth)));
 }

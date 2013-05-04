@@ -74,7 +74,7 @@
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RG_EXT, width, height, 0, GL_RG_EXT, GL_HALF_FLOAT_OES, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_HALF_FLOAT_OES, NULL);
 //        glGenerateMipmap(GL_TEXTURE_2D);
 
         // Create and set up the depth FBO
@@ -94,7 +94,7 @@
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RG_EXT, width >> BLUR_COEF, height >> BLUR_COEF, 0, GL_RG_EXT, GL_HALF_FLOAT_OES, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width >> BLUR_COEF, height >> BLUR_COEF, 0, GL_RGBA, GL_HALF_FLOAT_OES, 0);
 
         // Creating the blur FBO
         glBindFramebuffer(GL_FRAMEBUFFER, _fbos[BLUR_FBO]);
