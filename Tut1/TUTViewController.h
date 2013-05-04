@@ -15,5 +15,6 @@
 - (IBAction)handleTap:(UITapGestureRecognizer *)sender;
 - (IBAction)handlePan:(UIPanGestureRecognizer *)sender;
 - (IBAction)switchMSAA:(UISwitch *)sender;
+- (IBAction)switchTorus:(UISwitch *)sender;
 
 @end

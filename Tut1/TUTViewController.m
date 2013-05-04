@@ -232,10 +232,12 @@
 //    [prog setUniform:"modelViewProjectionMatrix" mat4:GLKMatrix4Identity];
 //    glActiveTexture(GL_TEXTURE0);
 //    glBindTexture(GL_TEXTURE_2D, self.light.shadow.name);
+//    glGenerateMipmap(GL_TEXTURE_2D);
 //    glDisable(GL_CULL_FACE);
 //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 //    glBindVertexArrayOES(_vertexArray);
 //    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+//    glCullFace(GL_BACK);
 
     // Pass 2 (render)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -258,8 +260,10 @@
     // TODO: Sort objects in Z-order
     [effect prepareToDraw:self.teapot];
     [self.teapot render];
-    [effect prepareToDraw:self.torus];
-    [self.torus render];
+    if (self.torus.visible) {
+        [effect prepareToDraw:self.torus];
+        [self.torus render];
+    }
     [effect prepareToDraw:self.floor];
     [self.floor render];
 }
@@ -296,6 +300,11 @@
     } else {
         ((GLKView *)self.view).drawableMultisample = GLKViewDrawableMultisampleNone;
     }
+}
+
+- (IBAction)switchTorus:(UISwitch *)sender
+{
+    self.torus.visible = sender.on;
 }
 
 @end

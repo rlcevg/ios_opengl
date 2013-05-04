@@ -1,9 +1,10 @@
-uniform vec2 texelSize;
 varying vec3 position;
 varying vec3 normal;
 varying vec4 color;
 varying vec4 shadowCoord;
 
+uniform vec2 texelSize;
+uniform float linearDepthConstant;  // 1.0 / (Far - Near)
 uniform sampler2D shadowMap;
 
 struct LightInfo {
@@ -69,6 +70,32 @@ float chebyshevUpperBound(float distance, vec2 offset)
 //	return shadow2DProjEXT(shadowMap, shadowCoord + vec4(offset.x * texelSize.x * shadowCoord.w, offset.y * texelSize.y * shadowCoord.w, 0.005, 0.0));
 //}
 
+float recombinePrecision(vec2 value)
+{
+    const float distributeFactor = 2048.0;  // see Shadow.fsh
+    const float factorInv = 1.0 / distributeFactor;
+    return dot(value, vec2(1.0, factorInv));
+}
+
+float esmShadow(vec2 offset)
+{
+    // Range [0, 80]
+    #define ESM_K 4.0
+    // Range [0, -oo]
+    #define ESM_MIN	 -0.5
+    // Range [1, 10]
+    #define ESM_DIFFUSE_SCALE 1.79
+
+    float receiver = distance(position, light.position.xyz) * linearDepthConstant;
+//    float occluder = recombinePrecision(texture2D(shadowMap, offset).rg);
+    float occluder = texture2D(shadowMap, offset).r;
+    float shadow = clamp(exp(max(ESM_MIN, ESM_K * (occluder - receiver))), 0.0, 1.0);
+    return 1.0 - (ESM_DIFFUSE_SCALE * (1.0 - shadow));
+//    float shadow = pow(occluder * exp(1.0), ESM_K) / exp(ESM_K * receiver);
+//    float shadow = clamp(pow(occluder, ESM_K) / exp(ESM_K * receiver), 0.0, 1.0);
+//    return shadow;
+}
+
 vec4 shadowedColor(void)
 {
     // Do the shadow-map look-up
@@ -82,13 +109,24 @@ vec4 shadowedColor(void)
 //        shadow /= 16.0;
 //    }
 
+//    float shadow = 1.0;
+//    if (shadowCoord.w > 0.0) {
+//        vec4 shadowCoordPostW = shadowCoord / shadowCoord.w;
+//        if ((shadowCoordPostW.x >= 0.0) && (shadowCoordPostW.x <= 1.0) &&
+//            (shadowCoordPostW.y >= 0.0) && (shadowCoordPostW.y <= 1.0)) {
+//            shadow = chebyshevUpperBound(shadowCoordPostW.z, shadowCoordPostW.xy);
+//            shadow = clamp(shadow + mapLinear(shadowCoordPostW.z, -20.0, 0.9), 0.1, 1.0);
+//        }
+//    }
+
     float shadow = 1.0;
     if (shadowCoord.w > 0.0) {
-        vec4 shadowCoordPostW = shadowCoord / shadowCoord.w;
+        vec3 shadowCoordPostW = shadowCoord.xyz / shadowCoord.w;
         if ((shadowCoordPostW.x >= 0.0) && (shadowCoordPostW.x <= 1.0) &&
             (shadowCoordPostW.y >= 0.0) && (shadowCoordPostW.y <= 1.0)) {
-            shadow = chebyshevUpperBound(shadowCoordPostW.z, shadowCoordPostW.xy);
-            shadow = clamp(shadow + mapLinear(shadowCoordPostW.z, -20.0, 0.9), 0.1, 1.0);
+            shadow = esmShadow(shadowCoordPostW.xy);
+//            shadow = clamp(shadow + mapLinear(shadowCoordPostW.z, -10.0, 0.9), 0.1, 1.0);
+//            shadow = clamp(shadow + mapLinear(shadowCoordPostW.z, -20.0, 0.9), 0.1, 1.0);
         }
     }
 

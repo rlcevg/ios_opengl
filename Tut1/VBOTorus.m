@@ -45,6 +45,7 @@ void generateVertexData(Vertex *vertices, int sides, int rings,
 - (id)initWithOuterRadius:(float)outerRadius innerRadius:(float)innerRadius nsides:(int) nsides nrings:(int) nrings
 {
     if (self = [super init]) {
+        _visible = YES;
         _sides = nsides;
         _rings = nrings;
         _outerRadius = outerRadius;
