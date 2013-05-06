@@ -10,6 +10,7 @@
 #import "VBOTeapot.h"
 #import "VBOFloor.h"
 #import "VBOTorus.h"
+#import "VBOCylinder.h"
 #import "Camera.h"
 #import "Light.h"
 #import "FBOShadow.h"
@@ -35,6 +36,7 @@
 @property (strong, nonatomic) VBOTeapot *teapot;
 @property (strong, nonatomic) VBOFloor *floor;
 @property (strong, nonatomic) VBOTorus *torus;
+@property (strong, nonatomic) VBOCylinder *cylinder;
 @property (strong, nonatomic) Camera *camera;
 @property (strong, nonatomic) Light *light;
 @property (strong, nonatomic) SceneEffect *sceneEffect;
@@ -129,6 +131,8 @@
     material.Ke = GLKVector3Make(0.1f, 0.1f, 0.3f);
     material.shininess = 100.0f;
     self.torus.material = material;
+    self.cylinder = [VBOCylinder new];
+    self.cylinder.material = material;
 
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     self.camera = [[Camera alloc] initWithEye:GLKVector3Make(-1.0f, 7.0f, 5.0f)
@@ -176,7 +180,8 @@
     self.camera.aspect = aspect;
 
     // Compute the model view matrix for the object rendered with GLKit
-    GLKMatrix4 modelMatrix = GLKMatrix4MakeYRotation(_rotation / 8);
+//    GLKMatrix4 modelMatrix = GLKMatrix4MakeYRotation(_rotation / 8);
+    GLKMatrix4 modelMatrix = GLKMatrix4Identity;
     self.floor.modelMatrix = modelMatrix;
 
     modelMatrix = GLKMatrix4MakeTranslation(-2.0f, 4.0f, 2.0f);
@@ -188,6 +193,10 @@
     modelMatrix = GLKMatrix4RotateY(modelMatrix, _rotation);
     modelMatrix = GLKMatrix4RotateX(modelMatrix, GLKMathDegreesToRadians(-90.0f));
     self.teapot.modelMatrix = modelMatrix;
+
+    modelMatrix = GLKMatrix4MakeTranslation(3.0f, 2.0f, 2.0f);
+    modelMatrix = GLKMatrix4RotateX(modelMatrix, GLKMathDegreesToRadians(90.0f));
+    self.cylinder.modelMatrix = modelMatrix;
 
     GLKMatrix3 rotate = GLKMatrix3MakeRotation(self.timeSinceLastUpdate * 4, -4.0f, 7.0f, 4.0f);
     self.light.eye = GLKMatrix3MultiplyVector3(rotate, self.light.eye);
@@ -245,6 +254,8 @@
     }
     [effect prepareToDraw:self.floor];
     [self.floor render];
+    [effect prepareToDraw:self.cylinder];
+    [self.cylinder render];
 }
 
 - (IBAction)handleTap:(UITapGestureRecognizer *)sender
@@ -258,7 +269,7 @@
 
     GLKMatrix4 viewProjectionMatrix = GLKMatrix4Multiply(self.camera.projectionMatrix, self.camera.viewMatrix);
     GLKMatrix4 unproject = GLKMatrix4Invert(viewProjectionMatrix, NULL);
-    GLKVector4 new_trans = GLKVector4Make(-translation.x * 8, translation.y * 8, 0.0, 1.0);
+    GLKVector4 new_trans = GLKVector4Make(-translation.x, translation.y, 0.0, 1.0);
     GLKVector4 new_eye4 = GLKMatrix4MultiplyVector4(unproject, new_trans);
     GLKVector3 new_eye = GLKVector3Make(new_eye4.x, new_eye4.y, new_eye4.z);
     GLKVector3 rotor = GLKVector3CrossProduct(self.camera.eye, new_eye);
@@ -284,6 +295,11 @@
 - (IBAction)switchTorus:(UISwitch *)sender
 {
     self.torus.visible = sender.on;
+}
+
+- (IBAction)switchShadows:(UISwitch *)sender
+{
+    self.sceneEffect.b_sh = sender.on;
 }
 
 @end

@@ -23,6 +23,7 @@
 @property (assign, nonatomic, readonly) GLuint name;
 @property (assign, nonatomic, readonly) GLenum target;
 @property (assign, nonatomic, readonly) GLKVector2 texelSize;
-@property (strong, nonatomic, readonly) GLSLProgram *programBlur;
+//@property (strong, nonatomic, readonly) GLSLProgram *program;
+//@property (strong, nonatomic, readonly) GLSLProgram *programBlur;
 
 @end

@@ -45,6 +45,7 @@
 		3E9ECBAF171D841E002DAB1E /* Shadow.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3E9ECBAE171D841E002DAB1E /* Shadow.fsh */; };
 		3E9ECBB2171D88EC002DAB1E /* Shadow.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3E9ECBB0171D858C002DAB1E /* Shadow.vsh */; };
 		3E9ECBB8171D93AA002DAB1E /* FBOShadow.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E9ECBB7171D93AA002DAB1E /* FBOShadow.m */; };
+		3EA1F7D21738049900FEC22E /* VBOCylinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EA1F7D11738049900FEC22E /* VBOCylinder.m */; };
 		3EC0A8C1172D8AE800618EA1 /* common.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EC0A8BD172D86F300618EA1 /* common.vsh */; };
 		3EC0A8C2172D8AED00618EA1 /* common.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EC0A8BF172D87D900618EA1 /* common.fsh */; };
 		3ED7E0781735A56000E2E4A7 /* VBOScreenQuad.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ED7E0771735A56000E2E4A7 /* VBOScreenQuad.m */; };
@@ -125,6 +126,8 @@
 		3E9ECBB0171D858C002DAB1E /* Shadow.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Shadow.vsh; path = Shaders/Shadow.vsh; sourceTree = "<group>"; };
 		3E9ECBB6171D93AA002DAB1E /* FBOShadow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBOShadow.h; sourceTree = "<group>"; };
 		3E9ECBB7171D93AA002DAB1E /* FBOShadow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FBOShadow.m; sourceTree = "<group>"; };
+		3EA1F7D01738049900FEC22E /* VBOCylinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VBOCylinder.h; sourceTree = "<group>"; };
+		3EA1F7D11738049900FEC22E /* VBOCylinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VBOCylinder.m; sourceTree = "<group>"; };
 		3EC0A8BD172D86F300618EA1 /* common.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = common.vsh; path = Shaders/common.vsh; sourceTree = "<group>"; };
 		3EC0A8BF172D87D900618EA1 /* common.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = common.fsh; path = Shaders/common.fsh; sourceTree = "<group>"; };
 		3ED7E0761735A56000E2E4A7 /* VBOScreenQuad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VBOScreenQuad.h; sourceTree = "<group>"; };
@@ -237,6 +240,8 @@
 				3E5B5B61171B19F600DFFD87 /* VBOTorus.m */,
 				3ED7E0761735A56000E2E4A7 /* VBOScreenQuad.h */,
 				3ED7E0771735A56000E2E4A7 /* VBOScreenQuad.m */,
+				3EA1F7D01738049900FEC22E /* VBOCylinder.h */,
+				3EA1F7D11738049900FEC22E /* VBOCylinder.m */,
 				3E98BFBB171C9C8A00C963E3 /* GLSLProgram.h */,
 				3E98BFBC171C9C8A00C963E3 /* GLSLProgram.m */,
 				3E9ECBB6171D93AA002DAB1E /* FBOShadow.h */,
@@ -437,6 +442,7 @@
 				3E2312CF172EE67E00FE2C77 /* FBOBloom.m in Sources */,
 				3E3AA7B81731B5F800527441 /* Utils.c in Sources */,
 				3ED7E0781735A56000E2E4A7 /* VBOScreenQuad.m in Sources */,
+				3EA1F7D21738049900FEC22E /* VBOCylinder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,6 +11,5 @@ varying float linearDepth;
 void main()
 {
     gl_Position = modelViewProjectionMatrix * positionVertex;
-//    linearDepth = 2.0 * length((modelViewMatrix * positionVertex).xyz) * linearDepthConstant - 1.0;
     linearDepth = length((modelViewMatrix * positionVertex).xyz) * linearDepthConstant;
 }
