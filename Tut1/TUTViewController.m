@@ -15,6 +15,7 @@
 #import "Light.h"
 #import "FBOShadow.h"
 #import "SceneEffect.h"
+#import "FBOBloom.h"
 
 #pragma mark - Debug
 #import "GLSLProgram.h"
@@ -40,6 +41,7 @@
 @property (strong, nonatomic) Camera *camera;
 @property (strong, nonatomic) Light *light;
 @property (strong, nonatomic) SceneEffect *sceneEffect;
+@property (strong, nonatomic) FBOBloom *bloom;
 
 @end
 
@@ -141,8 +143,10 @@
                                          fovy:GLKMathDegreesToRadians(65.0f) aspect:aspect
                                         nearZ:0.1f farZ:50.0f];
 
+    self.bloom = [[FBOBloom alloc] initWithScreenWidth:self.view.bounds.size.width
+                                       andScreenHeight:self.view.bounds.size.height];
+
     glClearColor(0.35f, 0.65f, 0.95f, 1.0f);
-//    glPolygonOffset(1.1, 4.0);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
@@ -153,7 +157,7 @@
     NSDictionary *attr = @{
         [NSNumber numberWithInteger:GLKVertexAttribTexCoord0] : @"texCoordVertex",
     };
-    if (![prog loadShaders:@"DebugShadow" withAttrs:attr]) {
+    if (![prog loadShaders:@"Debug" withAttrs:attr]) {
         [prog printLog];
     }
 }
@@ -170,6 +174,8 @@
     self.torus = nil;
 
     self.sceneEffect = nil;
+    self.bloom = nil;
+    quad = nil;
 }
 
 #pragma mark - GLKView and GLKViewController delegate methods
@@ -179,8 +185,10 @@
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     self.camera.aspect = aspect;
 
+    self.bloom.scrWidth = self.view.bounds.size.width;
+    self.bloom.scrHeight = self.view.bounds.size.height;
+
     // Compute the model view matrix for the object rendered with GLKit
-//    GLKMatrix4 modelMatrix = GLKMatrix4MakeYRotation(_rotation / 8);
     GLKMatrix4 modelMatrix = GLKMatrix4Identity;
     self.floor.modelMatrix = modelMatrix;
 
@@ -211,11 +219,23 @@
     CFTimeInterval previousTimestamp = CFAbsoluteTimeGetCurrent();
 
     // Pass 1 (shadow map generation)
-    self.light.shadow.enabled = YES;
+    [self.light.shadow prepareToDraw];
     [self renderWith:self.light.shadow];
-    [self.light.shadow blur];
-    self.light.shadow.enabled = NO;
+    [self.light.shadow process];
+
     [(GLKView *)self.view bindDrawable];
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Pass 2 (render)
+    self.sceneEffect.light = self.light;
+    self.sceneEffect.camera = self.camera;
+    [self.sceneEffect prepareToDraw];
+    [self.bloom prepareToDraw];
+    [self renderWith:self.sceneEffect];
+    [self.bloom process];
+
+    [(GLKView *)self.view bindDrawable];
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    [self.bloom render];
 
 //    [prog use];
 //    [prog setUniform:"modelViewProjectionMatrix" mat4:GLKMatrix4Identity];
@@ -225,14 +245,6 @@
 //    glDisable(GL_CULL_FACE);
 //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 //    [quad render];
-//    glCullFace(GL_BACK);
-
-    // Pass 2 (render)
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    self.sceneEffect.light = self.light;
-    self.sceneEffect.camera = self.camera;
-    [self.sceneEffect prepareToDraw];
-    [self renderWith:self.sceneEffect];
 
 //    glUseProgram(0);
 
@@ -295,11 +307,6 @@
 - (IBAction)switchTorus:(UISwitch *)sender
 {
     self.torus.visible = sender.on;
-}
-
-- (IBAction)switchShadows:(UISwitch *)sender
-{
-    self.sceneEffect.b_sh = sender.on;
 }
 
 @end

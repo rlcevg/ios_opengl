@@ -11,8 +11,9 @@
 #import "Light.h"
 #import "VBOScreenQuad.h"
 
-#define DEPTH_DATA_TEX0 0
-#define DEPTH_DATA_TEX1 1
+#define DEPTH_DATA_TEX 0
+#define BLUR_DEPTH_TEX0 1
+#define BLUR_DEPTH_TEX1 2
 #define SHADOW_FBO 0
 #define BLUR_FBO 1
 #define BLUR_COEF 1
@@ -22,7 +23,7 @@
 @interface FBOShadow () {
     GLuint _fbos[2];
     GLuint _rboDepth;
-    GLuint _textures[2];
+    GLuint _textures[3];
 }
 @property (strong, nonatomic) GLSLProgram *program;
 @property (strong, nonatomic) GLSLProgram *programBlur;
@@ -54,7 +55,7 @@
         _light = nil;
         _target = GL_TEXTURE_2D;
 
-        glGenTextures(2, _textures);
+        glGenTextures(3, _textures);
         glGenFramebuffers(2, _fbos);
 
         // Create depth renderbuffer
@@ -62,13 +63,10 @@
         glBindRenderbuffer(GL_RENDERBUFFER, _rboDepth);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24_OES, width, height);
 
-        // Create moment1-moment2 texture
-        glBindTexture(GL_TEXTURE_2D, _textures[DEPTH_DATA_TEX0]);
+        // Create depth data texture
+        glBindTexture(GL_TEXTURE_2D, _textures[DEPTH_DATA_TEX]);
 
-        GLfloat fLargest;
-        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &fLargest);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, fLargest);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -78,7 +76,7 @@
         // Create and set up the depth FBO
         glBindFramebuffer(GL_FRAMEBUFFER, _fbos[SHADOW_FBO]);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _rboDepth);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textures[DEPTH_DATA_TEX0], 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textures[DEPTH_DATA_TEX], 0);
 
         GLenum fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
@@ -86,24 +84,33 @@
             return nil;
         }
 
-        // Create blur color texture
-        glBindTexture(GL_TEXTURE_2D, _textures[DEPTH_DATA_TEX1]);
+        // Create blur0 color texture
+        glBindTexture(GL_TEXTURE_2D, _textures[BLUR_DEPTH_TEX0]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width >> BLUR_COEF, height >> BLUR_COEF, 0, GL_RGBA, GL_HALF_FLOAT_OES, 0);
 
-        // Creating the blur FBO
+        // Creating the blurred FBO
         glBindFramebuffer(GL_FRAMEBUFFER, _fbos[BLUR_FBO]);
 
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textures[DEPTH_DATA_TEX1], 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textures[BLUR_DEPTH_TEX0], 0);
 
         fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
             NSLog(@"Blur framebuffer is not complete: %x", fboStatus);
             return nil;
         }
+
+        // Create blur1 color texture
+        glBindTexture(GL_TEXTURE_2D, _textures[BLUR_DEPTH_TEX1]);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width >> BLUR_COEF, height >> BLUR_COEF, 0, GL_RGBA, GL_HALF_FLOAT_OES, 0);
+
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -118,7 +125,7 @@
     self.quad = nil;
 
     glDeleteFramebuffers(2, _fbos);
-	glDeleteTextures(2, _textures);
+	glDeleteTextures(3, _textures);
     glDeleteRenderbuffers(1, &_rboDepth);
 }
 
@@ -150,26 +157,16 @@
     return _programBlur;
 }
 
-- (void)setEnabled:(BOOL)enabled
+- (void)prepareToDraw
 {
-    if (_enabled != enabled) {
-        if (enabled) {
-            glBindFramebuffer(GL_FRAMEBUFFER, _fbos[SHADOW_FBO]);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glViewport(0, 0, _width, _height);
-//            glCullFace(GL_FRONT);
-//            glEnable(GL_POLYGON_OFFSET_FILL);
-        } else {
-//            glDisable(GL_POLYGON_OFFSET_FILL);
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        }
-        _enabled = enabled;
-    }
+    glBindFramebuffer(GL_FRAMEBUFFER, _fbos[SHADOW_FBO]);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glViewport(0, 0, _width, _height);
 }
 
 - (GLuint)name
 {
-    return _textures[DEPTH_DATA_TEX0];
+    return _textures[BLUR_DEPTH_TEX1];
 }
 
 - (GLKVector2)texelSize
@@ -192,33 +189,29 @@
     }
 }
 
-- (void)blur
+- (void)process
 {
     GLSLProgram *program = self.programBlur;
     [program use];
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _textures[DEPTH_DATA_TEX0]);
-    glGenerateMipmap(GL_TEXTURE_2D);
     glDisable(GL_DEPTH_TEST);
-//    glCullFace(GL_BACK);
-    [program setUniform:"textureSource" valInt:0];
-
+    glActiveTexture(GL_TEXTURE0);
     glBindFramebuffer(GL_FRAMEBUFFER, _fbos[BLUR_FBO]);
     glViewport(0, 0, _width >> BLUR_COEF, _height >> BLUR_COEF);
+    [program setUniform:"texSampler" valInt:0];
+
+    glBindTexture(GL_TEXTURE_2D, _textures[DEPTH_DATA_TEX]);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textures[BLUR_DEPTH_TEX0], 0);
     [program setUniform:"direction" valBool:YES];
     [program setUniform:"scale" valFloat:1.0 / (_width >> BLUR_COEF)];
     [self.quad render];
 
-    glBindTexture(GL_TEXTURE_2D, _textures[DEPTH_DATA_TEX1]);
-    glBindFramebuffer(GL_FRAMEBUFFER, _fbos[SHADOW_FBO]);
-    glViewport(0, 0, _width, _height);
+    glBindTexture(GL_TEXTURE_2D, _textures[BLUR_DEPTH_TEX0]);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textures[BLUR_DEPTH_TEX1], 0);
     [program setUniform:"direction" valBool:NO];
-    [program setUniform:"scale" valFloat:1.0 / _height];
+    [program setUniform:"scale" valFloat:1.0 / (_width >> BLUR_COEF)];
     [self.quad render];
 
-    glBindTexture(GL_TEXTURE_2D, _textures[DEPTH_DATA_TEX0]);
-    glGenerateMipmap(GL_TEXTURE_2D);
     glEnable(GL_DEPTH_TEST);
 }
 

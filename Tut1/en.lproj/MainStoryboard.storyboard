@@ -64,11 +64,6 @@
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <switch opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XFR-Hz-IzQ">
-                                <connections>
-                                    <action selector="switchShadows:" destination="2" eventType="valueChanged" id="oz1-G0-Ot8"/>
-                                </connections>
-                            </switch>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
@@ -78,12 +73,10 @@
                             <constraint firstAttribute="trailing" secondItem="R8B-Oo-cGf" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="LXZ-n1-Ovc"/>
                             <constraint firstItem="R8B-Oo-cGf" firstAttribute="baseline" secondItem="Pay-pm-W32" secondAttribute="baseline" type="default" id="Nok-Sm-x5N"/>
                             <constraint firstItem="AEL-2D-VHL" firstAttribute="centerY" secondItem="EVd-hS-9Ju" secondAttribute="centerY" type="default" id="aqF-bZ-2wR"/>
-                            <constraint firstItem="XFR-Hz-IzQ" firstAttribute="top" secondItem="EVd-hS-9Ju" secondAttribute="top" type="default" id="aqv-Sr-qBk"/>
                             <constraint firstAttribute="trailing" secondItem="EVd-hS-9Ju" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="b0l-7j-Ifb"/>
                             <constraint firstItem="tli-mE-3iS" firstAttribute="leading" secondItem="wId-d0-pBC" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="cVe-5g-gJY"/>
                             <constraint firstItem="R8B-Oo-cGf" firstAttribute="leading" secondItem="Pay-pm-W32" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="dVg-mX-MfO"/>
                             <constraint firstAttribute="trailing" secondItem="tli-mE-3iS" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="e1D-6U-EFo"/>
-                            <constraint firstItem="XFR-Hz-IzQ" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="eEg-uL-sm9"/>
                             <constraint firstItem="Pay-pm-W32" firstAttribute="top" secondItem="wId-d0-pBC" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="ghA-cd-0d1"/>
                             <constraint firstItem="wId-d0-pBC" firstAttribute="top" secondItem="3" secondAttribute="top" constant="20" symbolic="YES" type="default" id="h5a-wb-rRr"/>
                             <constraint firstAttribute="trailing" secondItem="22x-Uu-JrB" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="jXK-Wz-2q1"/>

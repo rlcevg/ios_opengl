@@ -10,8 +10,12 @@
 
 @interface FBOBloom : NSObject
 
-- (id)initWithWidth:(GLsizei)width andHeight:(GLsizei)height;
+- (id)initWithScreenWidth:(GLsizei)width andScreenHeight:(GLsizei)height;
+- (void)prepareToDraw;
+- (void)process;
+- (void)render;
 
-+ (GLfloat *)kernel5;
+@property (assign, nonatomic) GLsizei scrWidth;
+@property (assign, nonatomic) GLsizei scrHeight;
 
 @end

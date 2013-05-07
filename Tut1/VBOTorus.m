@@ -119,8 +119,10 @@ void generateVertexData(Vertex *vertices, int sides, int rings,
 
 - (void)render
 {
+    glDisable(GL_TEXTURE_2D);
     glBindVertexArrayOES(_vaoHandle);
     glDrawElements(GL_TRIANGLES, 6 * _faces, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+    glEnable(GL_TEXTURE_2D);
 }
 
 + (void)generateVerts:(Vertex *)verts colors:(GLfloat *)colors

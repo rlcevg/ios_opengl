@@ -46,6 +46,10 @@
 		3E9ECBB2171D88EC002DAB1E /* Shadow.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3E9ECBB0171D858C002DAB1E /* Shadow.vsh */; };
 		3E9ECBB8171D93AA002DAB1E /* FBOShadow.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E9ECBB7171D93AA002DAB1E /* FBOShadow.m */; };
 		3EA1F7D21738049900FEC22E /* VBOCylinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EA1F7D11738049900FEC22E /* VBOCylinder.m */; };
+		3EBC8D1B173913CF00E5DC93 /* BloomHigh.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EBC8D18173913A500E5DC93 /* BloomHigh.fsh */; };
+		3EBC8D1C173913D300E5DC93 /* BloomHigh.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EBC8D1A173913BC00E5DC93 /* BloomHigh.vsh */; };
+		3EBC8D1F17395AFA00E5DC93 /* BloomCombine4.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EBC8D1E173956DE00E5DC93 /* BloomCombine4.fsh */; };
+		3EBC8D2017395AFD00E5DC93 /* BloomCombine4.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EBC8D1D173956C900E5DC93 /* BloomCombine4.vsh */; };
 		3EC0A8C1172D8AE800618EA1 /* common.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EC0A8BD172D86F300618EA1 /* common.vsh */; };
 		3EC0A8C2172D8AED00618EA1 /* common.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EC0A8BF172D87D900618EA1 /* common.fsh */; };
 		3ED7E0781735A56000E2E4A7 /* VBOScreenQuad.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ED7E0771735A56000E2E4A7 /* VBOScreenQuad.m */; };
@@ -53,8 +57,8 @@
 		3EDED4191734551A00197E64 /* BlurBox4o.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EDED414173426B900197E64 /* BlurBox4o.vsh */; };
 		3EE5C0A0172D5F3A001E30EC /* ShaderTexture.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EE5C09D172D3FBD001E30EC /* ShaderTexture.vsh */; };
 		3EE5C0A1172D5F43001E30EC /* ShaderTexture.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EE5C09C172D3FBD001E30EC /* ShaderTexture.fsh */; };
-		3EEA6EF7171F502D006B9B91 /* DebugShadow.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EEA6EF3171F5019006B9B91 /* DebugShadow.fsh */; };
-		3EEA6EF8171F502F006B9B91 /* DebugShadow.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EEA6EF4171F5019006B9B91 /* DebugShadow.vsh */; };
+		3EEA6EF7171F502D006B9B91 /* Debug.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EEA6EF3171F5019006B9B91 /* Debug.fsh */; };
+		3EEA6EF8171F502F006B9B91 /* Debug.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EEA6EF4171F5019006B9B91 /* Debug.vsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -128,6 +132,10 @@
 		3E9ECBB7171D93AA002DAB1E /* FBOShadow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FBOShadow.m; sourceTree = "<group>"; };
 		3EA1F7D01738049900FEC22E /* VBOCylinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VBOCylinder.h; sourceTree = "<group>"; };
 		3EA1F7D11738049900FEC22E /* VBOCylinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VBOCylinder.m; sourceTree = "<group>"; };
+		3EBC8D18173913A500E5DC93 /* BloomHigh.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = BloomHigh.fsh; path = Shaders/BloomHigh.fsh; sourceTree = "<group>"; };
+		3EBC8D1A173913BC00E5DC93 /* BloomHigh.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BloomHigh.vsh; path = Shaders/BloomHigh.vsh; sourceTree = "<group>"; };
+		3EBC8D1D173956C900E5DC93 /* BloomCombine4.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BloomCombine4.vsh; path = Shaders/BloomCombine4.vsh; sourceTree = "<group>"; };
+		3EBC8D1E173956DE00E5DC93 /* BloomCombine4.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BloomCombine4.fsh; path = Shaders/BloomCombine4.fsh; sourceTree = "<group>"; };
 		3EC0A8BD172D86F300618EA1 /* common.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = common.vsh; path = Shaders/common.vsh; sourceTree = "<group>"; };
 		3EC0A8BF172D87D900618EA1 /* common.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = common.fsh; path = Shaders/common.fsh; sourceTree = "<group>"; };
 		3ED7E0761735A56000E2E4A7 /* VBOScreenQuad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VBOScreenQuad.h; sourceTree = "<group>"; };
@@ -136,8 +144,8 @@
 		3EDED416173427E900197E64 /* BlurBox4o.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = BlurBox4o.fsh; path = Shaders/BlurBox4o.fsh; sourceTree = "<group>"; };
 		3EE5C09C172D3FBD001E30EC /* ShaderTexture.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = ShaderTexture.fsh; path = Shaders/ShaderTexture.fsh; sourceTree = "<group>"; };
 		3EE5C09D172D3FBD001E30EC /* ShaderTexture.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = ShaderTexture.vsh; path = Shaders/ShaderTexture.vsh; sourceTree = "<group>"; };
-		3EEA6EF3171F5019006B9B91 /* DebugShadow.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DebugShadow.fsh; path = Shaders/DebugShadow.fsh; sourceTree = "<group>"; };
-		3EEA6EF4171F5019006B9B91 /* DebugShadow.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DebugShadow.vsh; path = Shaders/DebugShadow.vsh; sourceTree = "<group>"; };
+		3EEA6EF3171F5019006B9B91 /* Debug.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Debug.fsh; path = Shaders/Debug.fsh; sourceTree = "<group>"; };
+		3EEA6EF4171F5019006B9B91 /* Debug.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Debug.vsh; path = Shaders/Debug.vsh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,12 +185,16 @@
 				3EC0A8BF172D87D900618EA1 /* common.fsh */,
 				3E9ECBB0171D858C002DAB1E /* Shadow.vsh */,
 				3E9ECBAE171D841E002DAB1E /* Shadow.fsh */,
-				3EEA6EF4171F5019006B9B91 /* DebugShadow.vsh */,
-				3EEA6EF3171F5019006B9B91 /* DebugShadow.fsh */,
+				3EEA6EF4171F5019006B9B91 /* Debug.vsh */,
+				3EEA6EF3171F5019006B9B91 /* Debug.fsh */,
 				3E3AA7B117319A6400527441 /* BlurGaussian7.vsh */,
 				3E3AA7B317319A7400527441 /* BlurGaussian7.fsh */,
 				3EDED414173426B900197E64 /* BlurBox4o.vsh */,
 				3EDED416173427E900197E64 /* BlurBox4o.fsh */,
+				3EBC8D1A173913BC00E5DC93 /* BloomHigh.vsh */,
+				3EBC8D18173913A500E5DC93 /* BloomHigh.fsh */,
+				3EBC8D1D173956C900E5DC93 /* BloomCombine4.vsh */,
+				3EBC8D1E173956DE00E5DC93 /* BloomCombine4.fsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -371,6 +383,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3EBC8D2017395AFD00E5DC93 /* BloomCombine4.vsh in Resources */,
+				3EBC8D1F17395AFA00E5DC93 /* BloomCombine4.fsh in Resources */,
+				3EBC8D1C173913D300E5DC93 /* BloomHigh.vsh in Resources */,
+				3EBC8D1B173913CF00E5DC93 /* BloomHigh.fsh in Resources */,
 				3EDED4191734551A00197E64 /* BlurBox4o.vsh in Resources */,
 				3EDED4181734551500197E64 /* BlurBox4o.fsh in Resources */,
 				3E3AA7B51731A3C300527441 /* BlurGaussian7.vsh in Resources */,
@@ -379,8 +395,8 @@
 				3EC0A8C2172D8AED00618EA1 /* common.fsh in Resources */,
 				3EE5C0A0172D5F3A001E30EC /* ShaderTexture.vsh in Resources */,
 				3EE5C0A1172D5F43001E30EC /* ShaderTexture.fsh in Resources */,
-				3EEA6EF8171F502F006B9B91 /* DebugShadow.vsh in Resources */,
-				3EEA6EF7171F502D006B9B91 /* DebugShadow.fsh in Resources */,
+				3EEA6EF8171F502F006B9B91 /* Debug.vsh in Resources */,
+				3EEA6EF7171F502D006B9B91 /* Debug.fsh in Resources */,
 				3E61F3201716D72900FA7C64 /* InfoPlist.strings in Resources */,
 				3E61F3281716D72900FA7C64 /* Default.png in Resources */,
 				3E61F32A1716D72900FA7C64 /* Default@2x.png in Resources */,

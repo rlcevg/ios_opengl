@@ -124,8 +124,6 @@
         [program setUniform:"shadowMap" valInt:0];
 
         [program setUniform:"linearDepthConstant" valFloat:1.0 / (self.light.farZ - self.light.nearZ)];
-
-        [program setUniform:"b_sh" valBool:_b_sh];
     }
 
     if (self.camera) {

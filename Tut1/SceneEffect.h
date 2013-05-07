@@ -17,6 +17,5 @@
 
 @property (weak, nonatomic) Light *light;
 @property (weak, nonatomic) Camera *camera;
-@property (assign, nonatomic) BOOL b_sh;
 
 @end

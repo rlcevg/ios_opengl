@@ -13,17 +13,15 @@
 @interface FBOShadow : NSObject <Effect>
 
 - (id)initWithWidth:(GLsizei)width andHeight:(GLsizei)height;
+- (void)prepareToDraw;
 - (void)prepareToDraw:(id<Drawable>)object;
-- (void)blur;
+- (void)process;
 
 + (GLKMatrix4)shadowBias;
 
 @property (weak, nonatomic) Light *light;
-@property (assign, nonatomic, getter=isEnabled) BOOL enabled;
 @property (assign, nonatomic, readonly) GLuint name;
 @property (assign, nonatomic, readonly) GLenum target;
 @property (assign, nonatomic, readonly) GLKVector2 texelSize;
-//@property (strong, nonatomic, readonly) GLSLProgram *program;
-//@property (strong, nonatomic, readonly) GLSLProgram *programBlur;
 
 @end
