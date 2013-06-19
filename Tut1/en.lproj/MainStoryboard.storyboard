@@ -57,8 +57,18 @@
                                 </connections>
                             </switch>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Torus" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AEL-2D-VHL">
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XIE-Vc-KT4">
+                                <connections>
+                                    <action selector="switchBloom:" destination="2" eventType="valueChanged" id="L64-40-Jnu"/>
+                                </connections>
+                            </switch>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Bloom" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AR7-Ur-WBd">
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="21" id="jId-tG-Azy"/>
+                                    <constraint firstAttribute="height" constant="21" id="ys4-p5-qA5"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
@@ -68,22 +78,28 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                         <constraints>
+                            <constraint firstItem="XIE-Vc-KT4" firstAttribute="leading" secondItem="AR7-Ur-WBd" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="1du-r9-w7v"/>
                             <constraint firstItem="22x-Uu-JrB" firstAttribute="top" secondItem="EVd-hS-9Ju" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="Ksr-Hv-RBf"/>
                             <constraint firstItem="22x-Uu-JrB" firstAttribute="centerY" secondItem="pXW-Bk-Zt6" secondAttribute="centerY" type="default" id="LH5-Ke-Uz1"/>
                             <constraint firstAttribute="trailing" secondItem="R8B-Oo-cGf" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="LXZ-n1-Ovc"/>
+                            <constraint firstItem="AR7-Ur-WBd" firstAttribute="baseline" secondItem="AEL-2D-VHL" secondAttribute="baseline" type="default" id="M4M-eh-b7F"/>
+                            <constraint firstItem="AR7-Ur-WBd" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="Mjq-0O-tkd"/>
                             <constraint firstItem="R8B-Oo-cGf" firstAttribute="baseline" secondItem="Pay-pm-W32" secondAttribute="baseline" type="default" id="Nok-Sm-x5N"/>
-                            <constraint firstItem="AEL-2D-VHL" firstAttribute="centerY" secondItem="EVd-hS-9Ju" secondAttribute="centerY" type="default" id="aqF-bZ-2wR"/>
+                            <constraint firstItem="XIE-Vc-KT4" firstAttribute="top" secondItem="EVd-hS-9Ju" secondAttribute="top" type="default" id="RNP-nG-qtP"/>
                             <constraint firstAttribute="trailing" secondItem="EVd-hS-9Ju" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="b0l-7j-Ifb"/>
                             <constraint firstItem="tli-mE-3iS" firstAttribute="leading" secondItem="wId-d0-pBC" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="cVe-5g-gJY"/>
                             <constraint firstItem="R8B-Oo-cGf" firstAttribute="leading" secondItem="Pay-pm-W32" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="dVg-mX-MfO"/>
                             <constraint firstAttribute="trailing" secondItem="tli-mE-3iS" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="e1D-6U-EFo"/>
                             <constraint firstItem="Pay-pm-W32" firstAttribute="top" secondItem="wId-d0-pBC" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="ghA-cd-0d1"/>
                             <constraint firstItem="wId-d0-pBC" firstAttribute="top" secondItem="3" secondAttribute="top" constant="20" symbolic="YES" type="default" id="h5a-wb-rRr"/>
+                            <constraint firstItem="XIE-Vc-KT4" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="70" id="j7t-gN-B7G"/>
                             <constraint firstAttribute="trailing" secondItem="22x-Uu-JrB" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="jXK-Wz-2q1"/>
                             <constraint firstItem="22x-Uu-JrB" firstAttribute="leading" secondItem="pXW-Bk-Zt6" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="o6w-ey-E3X"/>
                             <constraint firstItem="tli-mE-3iS" firstAttribute="top" secondItem="3" secondAttribute="top" constant="20" symbolic="YES" type="default" id="oeT-4g-7Nt"/>
                             <constraint firstItem="EVd-hS-9Ju" firstAttribute="leading" secondItem="AEL-2D-VHL" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="pPi-c5-AgP"/>
+                            <constraint firstItem="AR7-Ur-WBd" firstAttribute="top" secondItem="AEL-2D-VHL" secondAttribute="top" type="default" id="rjk-k9-tlR"/>
                             <constraint firstAttribute="bottom" secondItem="pXW-Bk-Zt6" secondAttribute="bottom" constant="20" symbolic="YES" type="default" id="tyd-Yj-pIp"/>
+                            <constraint firstItem="AEL-2D-VHL" firstAttribute="centerY" secondItem="EVd-hS-9Ju" secondAttribute="centerY" type="default" id="xd7-sC-101"/>
                         </constraints>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="gLl-Jn-GNn" appends="YES" id="sqI-48-Dik"/>
@@ -92,8 +108,10 @@
                         </connections>
                     </view>
                     <connections>
+                        <outlet property="bloomSwitch" destination="XIE-Vc-KT4" id="T7c-p1-kek"/>
                         <outlet property="labelFPS" destination="tli-mE-3iS" id="kEu-ic-hRH"/>
                         <outlet property="labelFPS2" destination="R8B-Oo-cGf" id="7LK-p0-inc"/>
+                        <outlet property="torusSwitch" destination="EVd-hS-9Ju" id="H16-5D-aAi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>

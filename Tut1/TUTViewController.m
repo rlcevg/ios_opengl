@@ -17,16 +17,9 @@
 #import "SceneEffect.h"
 #import "FBOBloom.h"
 
-#pragma mark - Debug
-#import "GLSLProgram.h"
-#import "VBOScreenQuad.h"
-
 #pragma mark
 
 @interface TUTViewController () {
-    GLuint _vertexArray, _vertexBuffer;
-    GLSLProgram *prog;
-    VBOScreenQuad *quad;
     float _rotation;
 }
 @property (strong, nonatomic) EAGLContext *context;
@@ -42,6 +35,8 @@
 @property (strong, nonatomic) Light *light;
 @property (strong, nonatomic) SceneEffect *sceneEffect;
 @property (strong, nonatomic) FBOBloom *bloom;
+@property (assign, nonatomic) BOOL bloomVisible;
+@property (assign, nonatomic) BOOL torusVisible;
 
 @end
 
@@ -68,12 +63,13 @@
 }
 
 - (void)dealloc
-{    
+{
     [self tearDownGL];
     
     if ([EAGLContext currentContext] == self.context) {
         [EAGLContext setCurrentContext:nil];
     }
+    self.context = nil;
 }
 
 - (void)didReceiveMemoryWarning
@@ -133,6 +129,8 @@
     material.Ke = GLKVector3Make(0.1f, 0.1f, 0.3f);
     material.shininess = 100.0f;
     self.torus.material = material;
+    self.torusVisible = self.torusSwitch.on;
+    self.bloomVisible = self.bloomSwitch.on;
     self.cylinder = [VBOCylinder new];
     self.cylinder.material = material;
 
@@ -146,20 +144,9 @@
     self.bloom = [[FBOBloom alloc] initWithScreenWidth:self.view.bounds.size.width
                                        andScreenHeight:self.view.bounds.size.height];
 
-    glClearColor(0.35f, 0.65f, 0.95f, 1.0f);
+    glClearColor(0.35f, 0.65f, 0.79f, 1.0f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-
-#pragma mark - Debug
-
-    quad = [VBOScreenQuad new];
-    prog = [GLSLProgram new];
-    NSDictionary *attr = @{
-        [NSNumber numberWithInteger:GLKVertexAttribTexCoord0] : @"texCoordVertex",
-    };
-    if (![prog loadShaders:@"Debug" withAttrs:attr]) {
-        [prog printLog];
-    }
 }
 
 - (void)tearDownGL
@@ -175,7 +162,6 @@
 
     self.sceneEffect = nil;
     self.bloom = nil;
-    quad = nil;
 }
 
 #pragma mark - GLKView and GLKViewController delegate methods
@@ -223,28 +209,23 @@
     [self renderWith:self.light.shadow];
     [self.light.shadow process];
 
-    [(GLKView *)self.view bindDrawable];
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Pass 2 (render)
     self.sceneEffect.light = self.light;
     self.sceneEffect.camera = self.camera;
     [self.sceneEffect prepareToDraw];
-    [self.bloom prepareToDraw];
-    [self renderWith:self.sceneEffect];
-    [self.bloom process];
-
-    [(GLKView *)self.view bindDrawable];
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    [self.bloom render];
-
-//    [prog use];
-//    [prog setUniform:"modelViewProjectionMatrix" mat4:GLKMatrix4Identity];
-//    glActiveTexture(GL_TEXTURE0);
-//    glBindTexture(GL_TEXTURE_2D, self.light.shadow.name);
-//    glGenerateMipmap(GL_TEXTURE_2D);
-//    glDisable(GL_CULL_FACE);
-//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//    [quad render];
+    if (self.bloomVisible) {
+        [self.bloom prepareToDraw];
+        [self renderWith:self.sceneEffect];
+        [self.bloom process];
+        [(GLKView *)self.view bindDrawable];
+        glDisable(GL_DEPTH_TEST);
+        [self.bloom render];
+        glEnable(GL_DEPTH_TEST);
+    } else {
+        [(GLKView *)self.view bindDrawable];
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        [self renderWith:self.sceneEffect];
+    }
 
 //    glUseProgram(0);
 
@@ -260,7 +241,7 @@
     // TODO: Sort objects in Z-order
     [effect prepareToDraw:self.teapot];
     [self.teapot render];
-    if (self.torus.visible) {
+    if (self.torusVisible) {
         [effect prepareToDraw:self.torus];
         [self.torus render];
     }
@@ -306,7 +287,12 @@
 
 - (IBAction)switchTorus:(UISwitch *)sender
 {
-    self.torus.visible = sender.on;
+    self.torusVisible = sender.on;
+}
+
+- (IBAction)switchBloom:(UISwitch *)sender
+{
+    self.bloomVisible = sender.on;
 }
 
 @end

@@ -62,8 +62,8 @@
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24_OES, scrWidth, scrHeight);
 
         glBindTexture(GL_TEXTURE_2D, _textures[CAPTURE_TEX]);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, scrWidth, scrHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -128,6 +128,7 @@
 {
     self.programHigh = nil;
     self.programBlur = nil;
+    self.programCombine = nil;
     self.quad = nil;
 
     glDeleteFramebuffers(N_FBOS, _fbos);
@@ -170,7 +171,7 @@
         NSDictionary *attrs = @{
             [NSNumber numberWithInteger:GLKVertexAttribTexCoord0] : @"texCoordVertex",
         };
-        if (![_programCombine loadShaders:@"BloomCombine4" withAttrs:attrs]) {
+        if (![_programCombine loadShaders:@"BloomCombine5" withAttrs:attrs]) {
             [_programCombine printLog];
         }
     }

@@ -14,6 +14,4 @@
 - (void)updateWithTime:(float)time;
 - (void)render;
 
-@property (assign, nonatomic) BOOL visible;
-
 @end

@@ -48,8 +48,8 @@
 		3EA1F7D21738049900FEC22E /* VBOCylinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EA1F7D11738049900FEC22E /* VBOCylinder.m */; };
 		3EBC8D1B173913CF00E5DC93 /* BloomHigh.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EBC8D18173913A500E5DC93 /* BloomHigh.fsh */; };
 		3EBC8D1C173913D300E5DC93 /* BloomHigh.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EBC8D1A173913BC00E5DC93 /* BloomHigh.vsh */; };
-		3EBC8D1F17395AFA00E5DC93 /* BloomCombine4.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EBC8D1E173956DE00E5DC93 /* BloomCombine4.fsh */; };
-		3EBC8D2017395AFD00E5DC93 /* BloomCombine4.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EBC8D1D173956C900E5DC93 /* BloomCombine4.vsh */; };
+		3EBC8D1F17395AFA00E5DC93 /* BloomCombine5.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EBC8D1E173956DE00E5DC93 /* BloomCombine5.fsh */; };
+		3EBC8D2017395AFD00E5DC93 /* BloomCombine5.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EBC8D1D173956C900E5DC93 /* BloomCombine5.vsh */; };
 		3EC0A8C1172D8AE800618EA1 /* common.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EC0A8BD172D86F300618EA1 /* common.vsh */; };
 		3EC0A8C2172D8AED00618EA1 /* common.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EC0A8BF172D87D900618EA1 /* common.fsh */; };
 		3ED7E0781735A56000E2E4A7 /* VBOScreenQuad.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ED7E0771735A56000E2E4A7 /* VBOScreenQuad.m */; };
@@ -134,8 +134,8 @@
 		3EA1F7D11738049900FEC22E /* VBOCylinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VBOCylinder.m; sourceTree = "<group>"; };
 		3EBC8D18173913A500E5DC93 /* BloomHigh.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = BloomHigh.fsh; path = Shaders/BloomHigh.fsh; sourceTree = "<group>"; };
 		3EBC8D1A173913BC00E5DC93 /* BloomHigh.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BloomHigh.vsh; path = Shaders/BloomHigh.vsh; sourceTree = "<group>"; };
-		3EBC8D1D173956C900E5DC93 /* BloomCombine4.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BloomCombine4.vsh; path = Shaders/BloomCombine4.vsh; sourceTree = "<group>"; };
-		3EBC8D1E173956DE00E5DC93 /* BloomCombine4.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BloomCombine4.fsh; path = Shaders/BloomCombine4.fsh; sourceTree = "<group>"; };
+		3EBC8D1D173956C900E5DC93 /* BloomCombine5.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BloomCombine5.vsh; path = Shaders/BloomCombine5.vsh; sourceTree = "<group>"; };
+		3EBC8D1E173956DE00E5DC93 /* BloomCombine5.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BloomCombine5.fsh; path = Shaders/BloomCombine5.fsh; sourceTree = "<group>"; };
 		3EC0A8BD172D86F300618EA1 /* common.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = common.vsh; path = Shaders/common.vsh; sourceTree = "<group>"; };
 		3EC0A8BF172D87D900618EA1 /* common.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = common.fsh; path = Shaders/common.fsh; sourceTree = "<group>"; };
 		3ED7E0761735A56000E2E4A7 /* VBOScreenQuad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VBOScreenQuad.h; sourceTree = "<group>"; };
@@ -193,8 +193,8 @@
 				3EDED416173427E900197E64 /* BlurBox4o.fsh */,
 				3EBC8D1A173913BC00E5DC93 /* BloomHigh.vsh */,
 				3EBC8D18173913A500E5DC93 /* BloomHigh.fsh */,
-				3EBC8D1D173956C900E5DC93 /* BloomCombine4.vsh */,
-				3EBC8D1E173956DE00E5DC93 /* BloomCombine4.fsh */,
+				3EBC8D1D173956C900E5DC93 /* BloomCombine5.vsh */,
+				3EBC8D1E173956DE00E5DC93 /* BloomCombine5.fsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -383,8 +383,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3EBC8D2017395AFD00E5DC93 /* BloomCombine4.vsh in Resources */,
-				3EBC8D1F17395AFA00E5DC93 /* BloomCombine4.fsh in Resources */,
+				3EBC8D2017395AFD00E5DC93 /* BloomCombine5.vsh in Resources */,
+				3EBC8D1F17395AFA00E5DC93 /* BloomCombine5.fsh in Resources */,
 				3EBC8D1C173913D300E5DC93 /* BloomHigh.vsh in Resources */,
 				3EBC8D1B173913CF00E5DC93 /* BloomHigh.fsh in Resources */,
 				3EDED4191734551A00197E64 /* BlurBox4o.vsh in Resources */,

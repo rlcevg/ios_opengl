@@ -10,11 +10,14 @@
 #import <GLKit/GLKit.h>
 
 @interface TUTViewController : GLKViewController
+@property (weak, nonatomic) IBOutlet UISwitch *torusSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *bloomSwitch;
 @property (weak, nonatomic) IBOutlet UILabel *labelFPS;
 @property (weak, nonatomic) IBOutlet UILabel *labelFPS2;
 - (IBAction)handleTap:(UITapGestureRecognizer *)sender;
 - (IBAction)handlePan:(UIPanGestureRecognizer *)sender;
 - (IBAction)switchMSAA:(UISwitch *)sender;
 - (IBAction)switchTorus:(UISwitch *)sender;
+- (IBAction)switchBloom:(UISwitch *)sender;
 
 @end

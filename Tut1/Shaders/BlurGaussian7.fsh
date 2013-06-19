@@ -21,5 +21,13 @@ void main()
     color += texture2D(texSampler, texCoord + vec2(3.5, 3.5) * scale) * 0.09375;
     color += texture2D(texSampler, texCoord + vec2(5.5, 5.5) * scale) * 0.015625;
 
+//    color += texture2D(texSampler, texCoord + vec2(3.0, -3.0) * scale) * 0.015625;
+//    color += texture2D(texSampler, texCoord + vec2(2.0, -2.0) * scale) * 0.09375;
+//    color += texture2D(texSampler, texCoord + vec2(1.0, -1.0) * scale) * 0.234375;
+//    color += texture2D(texSampler, texCoord) * 0.3125;
+//    color += texture2D(texSampler, texCoord + vec2(1.0, 1.0) * scale) * 0.234375;
+//    color += texture2D(texSampler, texCoord + vec2(2.0, 2.0) * scale) * 0.09375;
+//    color += texture2D(texSampler, texCoord + vec2(3.0, 3.0) * scale) * 0.015625;
+
 	gl_FragColor = color;
 }
