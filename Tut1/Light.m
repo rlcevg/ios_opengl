@@ -36,7 +36,7 @@
 
 - (void)dealloc
 {
-    self.shadow = nil;
+//    self.shadow = nil;
 }
 
 - (GLKVector4)position

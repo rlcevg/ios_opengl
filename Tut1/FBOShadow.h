@@ -12,7 +12,7 @@
 
 @interface FBOShadow : NSObject <Effect>
 
-- (id)initWithWidth:(GLsizei)width andHeight:(GLsizei)height;
+- (id)initWithWidth:(GLsizei)width height:(GLsizei)height;
 - (void)prepareToDraw;
 - (void)prepareToDraw:(id<Drawable>)object;
 - (void)process;

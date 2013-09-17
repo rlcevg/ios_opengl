@@ -40,7 +40,7 @@ typedef void (*GLLogFunction)(GLuint program, GLsizei bufsize, GLsizei* length, 
 - (void)dealloc
 {
     [self clear];
-    self.shaderHandle = nil;
+//    self.shaderHandle = nil;
 }
 
 - (NSMutableArray *)shaderHandle

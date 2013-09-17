@@ -199,7 +199,7 @@ void moveLid(int grid, GLfloat *v, GLKMatrix4 lidTransform);
     return nil;
 }
 
-- (id)initWithGrid:(int)grid andLidTransfrom:(GLKMatrix4)lidTransform
+- (id)initWithGrid:(int)grid lidTransfrom:(GLKMatrix4)lidTransform
 {
     if (self = [super init]) {
         int verts = 32 * (grid + 1) * (grid + 1);

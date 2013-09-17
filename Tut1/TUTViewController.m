@@ -15,7 +15,13 @@
 #import "Light.h"
 #import "FBOShadow.h"
 #import "SceneEffect.h"
+#import "FBOCapture.h"
 #import "FBOBloom.h"
+
+//#ifdef DEBUG
+//#import "VBOScreenQuad.h"
+//#import "GLSLProgram.h"
+//#endif
 
 #pragma mark
 
@@ -34,9 +40,12 @@
 @property (strong, nonatomic) Camera *camera;
 @property (strong, nonatomic) Light *light;
 @property (strong, nonatomic) SceneEffect *sceneEffect;
+@property (strong, nonatomic) FBOCapture *capture;
 @property (strong, nonatomic) FBOBloom *bloom;
 @property (assign, nonatomic) BOOL bloomVisible;
 @property (assign, nonatomic) BOOL torusVisible;
+@property (strong, nonatomic) GLKTextureInfo *cubemap;
+@property (strong, nonatomic) GLKSkyboxEffect *skyboxEffect;
 
 @end
 
@@ -69,7 +78,7 @@
     if ([EAGLContext currentContext] == self.context) {
         [EAGLContext setCurrentContext:nil];
     }
-    self.context = nil;
+//    self.context = nil;
 }
 
 - (void)didReceiveMemoryWarning
@@ -101,6 +110,23 @@
         NSLog(@"%@", oneExtension);
 #endif
 
+    NSArray *cubeMapFileNames = [NSArray arrayWithObjects:
+                                 [[NSBundle mainBundle] pathForResource:@"rightsp9" ofType:@"jpg"],
+                                 [[NSBundle mainBundle] pathForResource:@"leftsp9"  ofType:@"jpg"],
+                                 [[NSBundle mainBundle] pathForResource:@"topsp9"   ofType:@"jpg"],
+                                 [[NSBundle mainBundle] pathForResource:@"botsp9"   ofType:@"jpg"],
+                                 [[NSBundle mainBundle] pathForResource:@"frontsp9" ofType:@"jpg"],
+                                 [[NSBundle mainBundle] pathForResource:@"backsp9"  ofType:@"jpg"],
+                                 nil];
+    NSError *error;
+    NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO]
+                                                        forKey:GLKTextureLoaderOriginBottomLeft];
+    self.cubemap = [GLKTextureLoader cubeMapWithContentsOfFiles:cubeMapFileNames
+                                                        options:options
+                                                          error:&error];
+    self.skyboxEffect = [[GLKSkyboxEffect alloc] init];
+    self.skyboxEffect.textureCubeMap.name = self.cubemap.name;
+
     self.sceneEffect = [SceneEffect new];
     self.light = [[Light alloc] initWithPosition:GLKVector4Make(-5.0f, 7.0f, 5.0f, 1.0f)
                                           center:GLKVector3Make(0.0f, 0.0f, 0.0f)
@@ -116,7 +142,7 @@
         .Ks=GLKVector3Make(1.5f, 1.5f, 1.5f),
         .shininess=150.0f
     };
-    self.teapot = [[VBOTeapot alloc] initWithGrid:14 andLidTransfrom:GLKMatrix4Identity];
+    self.teapot = [[VBOTeapot alloc] initWithGrid:14 lidTransfrom:GLKMatrix4Identity];
     self.teapot.material = material;
     self.teapot.constantColor = GLKVector3Make(0.7f, 0.8f, 0.2f);
     self.floor = [VBOFloor new];
@@ -141,8 +167,12 @@
                                          fovy:GLKMathDegreesToRadians(65.0f) aspect:aspect
                                         nearZ:0.1f farZ:50.0f];
 
-    self.bloom = [[FBOBloom alloc] initWithScreenWidth:self.view.bounds.size.width
-                                       andScreenHeight:self.view.bounds.size.height];
+    CGSize screenSize = self.view.bounds.size;
+    CGFloat screenScale = [[UIScreen mainScreen] scale];
+    self.capture = [FBOCapture captureFramebuffer:self.msaaSwitch.on ? CP_MSAA : CP_NONE
+                                            width:screenSize.width * screenScale
+                                           height:screenSize.height * screenScale];
+    self.bloom = [[FBOBloom alloc] initWithCaptureFramebuffer:self.capture];
 
     glClearColor(0.35f, 0.65f, 0.79f, 1.0f);
     glEnable(GL_DEPTH_TEST);
@@ -171,8 +201,10 @@
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     self.camera.aspect = aspect;
 
-    self.bloom.scrWidth = self.view.bounds.size.width;
-    self.bloom.scrHeight = self.view.bounds.size.height;
+    CGSize screenSize = self.view.bounds.size;
+    CGFloat screenScale = [[UIScreen mainScreen] scale];
+    self.capture.width = screenSize.width * screenScale;
+    self.capture.height = screenSize.height * screenScale;
 
     // Compute the model view matrix for the object rendered with GLKit
     GLKMatrix4 modelMatrix = GLKMatrix4Identity;
@@ -192,16 +224,31 @@
     modelMatrix = GLKMatrix4RotateX(modelMatrix, GLKMathDegreesToRadians(90.0f));
     self.cylinder.modelMatrix = modelMatrix;
 
-    GLKMatrix3 rotate = GLKMatrix3MakeRotation(self.timeSinceLastUpdate * 4, -4.0f, 7.0f, 4.0f);
-    self.light.eye = GLKMatrix3MultiplyVector3(rotate, self.light.eye);
+//    GLKMatrix3 rotate = GLKMatrix3MakeRotation(self.timeSinceLastUpdate * 4, -4.0f, 7.0f, 4.0f);
+//    self.light.eye = GLKMatrix3MultiplyVector3(rotate, self.light.eye);
 
     _rotation += self.timeSinceLastUpdate * 0.5f;
 
     [self.torus updateWithTime:_rotation * 10];
+
+    self.skyboxEffect.transform.projectionMatrix = self.camera.projectionMatrix;
+    modelMatrix = GLKMatrix4Scale(self.camera.viewMatrix, 40, 40, 40);
+    self.skyboxEffect.transform.modelviewMatrix = GLKMatrix4RotateY(modelMatrix, -(M_PI + 1.0));
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
+//    static VBOScreenQuad *quad = nil;
+//    if (!quad) {
+//        quad = [[VBOScreenQuad alloc] init];
+//    }
+//    static GLSLProgram *program = nil;
+//    if (!program) {
+//        program = [[GLSLProgram alloc] init];
+//        [program loadShaders:@"Debug" withAttrs:@{[NSNumber numberWithInteger:GLKVertexAttribTexCoord0] : @"texCoordVertex",}];
+//    }
+//    glClearDepthf(1.0);
+
     CFTimeInterval previousTimestamp = CFAbsoluteTimeGetCurrent();
 
     // Pass 1 (shadow map generation)
@@ -209,21 +256,37 @@
     [self renderWith:self.light.shadow];
     [self.light.shadow process];
 
+//    [(GLKView *)self.view bindDrawable];
+//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//    glBindTexture(GL_TEXTURE_2D, self.light.shadow.name);
+//    [program use];
+//    [quad render];
+
     // Pass 2 (render)
     self.sceneEffect.light = self.light;
     self.sceneEffect.camera = self.camera;
     [self.sceneEffect prepareToDraw];
+
     if (self.bloomVisible) {
         [self.bloom prepareToDraw];
+
+        [self.skyboxEffect prepareToDraw];
+        [self.skyboxEffect draw];
+
         [self renderWith:self.sceneEffect];
         [self.bloom process];
         [(GLKView *)self.view bindDrawable];
         glDisable(GL_DEPTH_TEST);
         [self.bloom render];
         glEnable(GL_DEPTH_TEST);
+
     } else {
         [(GLKView *)self.view bindDrawable];
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        [self.skyboxEffect prepareToDraw];
+        [self.skyboxEffect draw];
+
         [self renderWith:self.sceneEffect];
     }
 
@@ -279,9 +342,27 @@
 - (IBAction)switchMSAA:(UISwitch *)sender
 {
     if (sender.on) {
-        ((GLKView *)self.view).drawableMultisample = GLKViewDrawableMultisample4X;
+        if (self.bloomVisible) {
+            CGSize screenSize = self.view.bounds.size;
+            CGFloat screenScale = [[UIScreen mainScreen] scale];
+            self.capture = [FBOCapture captureFramebuffer:CP_MSAA
+                                                    width:screenSize.width * screenScale
+                                                   height:screenSize.height * screenScale];
+            self.bloom.capture = self.capture;
+        } else {
+            ((GLKView *)self.view).drawableMultisample = GLKViewDrawableMultisample4X;
+        }
     } else {
-        ((GLKView *)self.view).drawableMultisample = GLKViewDrawableMultisampleNone;
+        if (self.bloomVisible) {
+            CGSize screenSize = self.view.bounds.size;
+            CGFloat screenScale = [[UIScreen mainScreen] scale];
+            self.capture = [FBOCapture captureFramebuffer:CP_NONE
+                                                    width:screenSize.width * screenScale
+                                                   height:screenSize.height * screenScale];
+            self.bloom.capture = self.capture;
+        } else {
+            ((GLKView *)self.view).drawableMultisample = GLKViewDrawableMultisampleNone;
+        }
     }
 }
 

@@ -12,6 +12,7 @@
 @interface TUTViewController : GLKViewController
 @property (weak, nonatomic) IBOutlet UISwitch *torusSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *bloomSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *msaaSwitch;
 @property (weak, nonatomic) IBOutlet UILabel *labelFPS;
 @property (weak, nonatomic) IBOutlet UILabel *labelFPS2;
 - (IBAction)handleTap:(UITapGestureRecognizer *)sender;

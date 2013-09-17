@@ -42,8 +42,8 @@
 
 - (void)dealloc
 {
-    self.view = nil;
-    self.projection = nil;
+//    self.view = nil;
+//    self.projection = nil;
 }
 
 - (ViewInfo *)view

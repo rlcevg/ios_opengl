@@ -7,15 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+@class FBOCapture;
 
 @interface FBOBloom : NSObject
 
-- (id)initWithScreenWidth:(GLsizei)width andScreenHeight:(GLsizei)height;
+- (id)initWithCaptureFramebuffer:(FBOCapture *)capture;
+- (id)initWithWidth:(GLsizei)width height:(GLsizei)height captureFramebuffer:(FBOCapture *)capture;
 - (void)prepareToDraw;
 - (void)process;
 - (void)render;
 
-@property (assign, nonatomic) GLsizei scrWidth;
-@property (assign, nonatomic) GLsizei scrHeight;
+@property (strong, nonatomic) FBOCapture *capture;
 
 @end

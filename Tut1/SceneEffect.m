@@ -42,7 +42,7 @@
 
 - (void)dealloc
 {
-    self.program = nil;
+//    self.program = nil;
 }
 
 - (GLSLProgram *)program

@@ -115,7 +115,7 @@ typedef struct {
 
 - (void)dealloc
 {
-    self.texture = nil;
+//    self.texture = nil;
 
 	glDeleteBuffers(2, _handle);
 	glDeleteVertexArraysOES(1, &_vaoHandle);
