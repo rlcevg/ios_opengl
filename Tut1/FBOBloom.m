@@ -12,7 +12,7 @@
 #import "FBOCapture.h"
 #import "GLSLBlur.h"
 
-#define FILTER_COUNT 4
+#define FILTER_COUNT 3
 #define HIGH_TEX (FILTER_COUNT * 2)
 #define HIGH_FBO (FILTER_COUNT)
 #define N_TEXTURES (FILTER_COUNT * 2 + 1)
@@ -40,13 +40,13 @@
 
 - (id)initWithCaptureFramebuffer:(FBOCapture *)capture
 {
-    return [self initWithWidth:512 height:512 captureFramebuffer:capture];
+    return [self initWithWidth:256 height:256 captureFramebuffer:capture];
 }
 
 - (id)initWithWidth:(GLsizei)width height:(GLsizei)height captureFramebuffer:(FBOCapture *)capture
 {
     if (self = [super init]) {
-        _quad = [VBOScreenQuad new];
+        _quad = [VBOScreenQuad screenQuad];
         _width = width;
         _height = height;
         _capture = capture;
@@ -143,7 +143,7 @@
         NSDictionary *attrs = @{
             [NSNumber numberWithInteger:GLKVertexAttribTexCoord0] : @"texCoordVertex",
         };
-        if (![_programCombine loadShaders:@"BloomCombine5" withAttrs:attrs]) {
+        if (![_programCombine loadShaders:@"BloomCombine4" withAttrs:attrs]) {
             [_programCombine printLog];
         }
     }
@@ -205,6 +205,7 @@
 
 - (void)render
 {
+    glDisable(GL_DEPTH_TEST);
     GLSLProgram *program = self.programCombine;
     [program use];
     char name[] = "pass#";
@@ -219,6 +220,7 @@
 //    glBindTexture(GL_TEXTURE_2D, 0);
     [program setUniform:"scene" valInt:FILTER_COUNT];
     [self.quad render];
+    glEnable(GL_DEPTH_TEST);
 }
 
 @end

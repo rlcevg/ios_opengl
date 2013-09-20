@@ -16,5 +16,6 @@
 @property (assign, nonatomic) float nearZ;
 @property (assign, nonatomic) float farZ;
 @property (assign, nonatomic) GLKMatrix4 matrix;
+@property (assign, nonatomic, getter=isChanged, readonly) BOOL changed;
 
 @end

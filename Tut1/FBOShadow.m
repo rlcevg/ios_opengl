@@ -50,7 +50,7 @@
 - (id)initWithWidth:(GLsizei)width height:(GLsizei)height
 {
     if (self = [super init]) {
-        _quad = [VBOScreenQuad new];
+        _quad = [VBOScreenQuad screenQuad];
         _program = nil;
         _programBlur = nil;
         _width = width;
@@ -69,6 +69,7 @@
         // Create depth data texture
         glBindTexture(GL_TEXTURE_2D, _textures[DEPTH_DATA_TEX]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -88,6 +89,7 @@
         // Create blur0 color texture
         glBindTexture(GL_TEXTURE_2D, _textures[BLUR_DEPTH_TEX0]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -207,13 +209,13 @@
     glBindTexture(GL_TEXTURE_2D, _textures[DEPTH_DATA_TEX]);
     glGenerateMipmap(GL_TEXTURE_2D);
 //    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textures[BLUR_DEPTH_TEX1], 0);
-//    [program setUniform:"scale" vec2:GLKVector2Make(1.0 / (_width >> BLUR_COEF), 0.0)];
-    [program setUniform:"scale" vec2:GLKVector2Make(1.0 / (_width >> BLUR_COEF), 1.0 / (_height >> BLUR_COEF))];
+//    [program setUniform:"texelSize" vec2:GLKVector2Make(1.0 / (_width >> BLUR_COEF), 0.0)];
+    [program setUniform:"texelSize" vec2:GLKVector2Make(1.0 / (_width >> BLUR_COEF), 1.0 / (_height >> BLUR_COEF))];
     [self.quad render];
 
 //    glBindTexture(GL_TEXTURE_2D, _textures[BLUR_DEPTH_TEX1]);
 //    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textures[BLUR_DEPTH_TEX0], 0);
-//    [program setUniform:"scale" vec2:GLKVector2Make(0.0, 1.0 / (_height >> BLUR_COEF))];
+//    [program setUniform:"texelSize" vec2:GLKVector2Make(0.0, 1.0 / (_height >> BLUR_COEF))];
 //    [self.quad render];
 
     glBindTexture(GL_TEXTURE_2D, _textures[BLUR_DEPTH_TEX0]);

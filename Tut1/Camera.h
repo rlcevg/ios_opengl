@@ -8,11 +8,14 @@
 
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
+@class VAOQuad;
+@protocol Effect;
 
 @interface Camera : NSObject
 
 - (id)initWithEye:(GLKVector3)eye center:(GLKVector3)center up:(GLKVector3)up
              fovy:(float)fovy aspect:(float)aspect nearZ:(float)nearZ farZ:(float)farZ;
+- (void)drawFarPlaneWith:(id<Effect>)effect;
 
 @property (assign, nonatomic) GLKVector3 eye;
 @property (assign, nonatomic) GLKVector3 center;
@@ -23,5 +26,6 @@
 @property (assign, nonatomic) float nearZ;
 @property (assign, nonatomic) float farZ;
 @property (assign, nonatomic, readonly) GLKMatrix4 projectionMatrix;
+@property (strong, nonatomic, readonly) VAOQuad *farPlaneQuad;
 
 @end

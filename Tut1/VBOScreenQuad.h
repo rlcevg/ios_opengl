@@ -12,4 +12,6 @@
 
 - (void)render;
 
++ (VBOScreenQuad *)screenQuad;
+
 @end

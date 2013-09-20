@@ -42,8 +42,8 @@
 @property (strong, nonatomic) SceneEffect *sceneEffect;
 @property (strong, nonatomic) FBOCapture *capture;
 @property (strong, nonatomic) FBOBloom *bloom;
-@property (assign, nonatomic) BOOL bloomVisible;
-@property (assign, nonatomic) BOOL torusVisible;
+@property (assign, nonatomic) BOOL bloomEnabled;
+@property (assign, nonatomic) BOOL torusEnabled;
 @property (strong, nonatomic) GLKTextureInfo *cubemap;
 @property (strong, nonatomic) GLKSkyboxEffect *skyboxEffect;
 
@@ -155,8 +155,8 @@
     material.Ke = GLKVector3Make(0.1f, 0.1f, 0.3f);
     material.shininess = 100.0f;
     self.torus.material = material;
-    self.torusVisible = self.torusSwitch.on;
-    self.bloomVisible = self.bloomSwitch.on;
+    self.torusEnabled = self.torusSwitch.on;
+    self.bloomEnabled = self.bloomSwitch.on;
     self.cylinder = [VBOCylinder new];
     self.cylinder.material = material;
 
@@ -240,20 +240,20 @@
 {
 //    static VBOScreenQuad *quad = nil;
 //    if (!quad) {
-//        quad = [[VBOScreenQuad alloc] init];
+//        quad = [VBOScreenQuad screenQuad];
 //    }
 //    static GLSLProgram *program = nil;
 //    if (!program) {
 //        program = [[GLSLProgram alloc] init];
 //        [program loadShaders:@"Debug" withAttrs:@{[NSNumber numberWithInteger:GLKVertexAttribTexCoord0] : @"texCoordVertex",}];
 //    }
-//    glClearDepthf(1.0);
 
     CFTimeInterval previousTimestamp = CFAbsoluteTimeGetCurrent();
 
     // Pass 1 (shadow map generation)
     [self.light.shadow prepareToDraw];
     [self renderWith:self.light.shadow];
+//    [self.light drawFarPlaneWith:self.light.shadow];
     [self.light.shadow process];
 
 //    [(GLKView *)self.view bindDrawable];
@@ -267,7 +267,7 @@
     self.sceneEffect.camera = self.camera;
     [self.sceneEffect prepareToDraw];
 
-    if (self.bloomVisible) {
+    if (self.bloomEnabled) {
         [self.bloom prepareToDraw];
 
         [self.skyboxEffect prepareToDraw];
@@ -276,9 +276,7 @@
         [self renderWith:self.sceneEffect];
         [self.bloom process];
         [(GLKView *)self.view bindDrawable];
-        glDisable(GL_DEPTH_TEST);
         [self.bloom render];
-        glEnable(GL_DEPTH_TEST);
 
     } else {
         [(GLKView *)self.view bindDrawable];
@@ -304,7 +302,7 @@
     // TODO: Sort objects in Z-order
     [effect prepareToDraw:self.teapot];
     [self.teapot render];
-    if (self.torusVisible) {
+    if (self.torusEnabled) {
         [effect prepareToDraw:self.torus];
         [self.torus render];
     }
@@ -342,7 +340,7 @@
 - (IBAction)switchMSAA:(UISwitch *)sender
 {
     if (sender.on) {
-        if (self.bloomVisible) {
+        if (self.bloomEnabled) {
             CGSize screenSize = self.view.bounds.size;
             CGFloat screenScale = [[UIScreen mainScreen] scale];
             self.capture = [FBOCapture captureFramebuffer:CP_MSAA
@@ -353,7 +351,7 @@
             ((GLKView *)self.view).drawableMultisample = GLKViewDrawableMultisample4X;
         }
     } else {
-        if (self.bloomVisible) {
+        if (self.bloomEnabled) {
             CGSize screenSize = self.view.bounds.size;
             CGFloat screenScale = [[UIScreen mainScreen] scale];
             self.capture = [FBOCapture captureFramebuffer:CP_NONE
@@ -368,12 +366,12 @@
 
 - (IBAction)switchTorus:(UISwitch *)sender
 {
-    self.torusVisible = sender.on;
+    self.torusEnabled = sender.on;
 }
 
 - (IBAction)switchBloom:(UISwitch *)sender
 {
-    self.bloomVisible = sender.on;
+    self.bloomEnabled = sender.on;
 }
 
 @end

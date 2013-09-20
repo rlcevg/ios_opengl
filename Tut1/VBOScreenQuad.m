@@ -58,4 +58,13 @@
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
++ (VBOScreenQuad *)screenQuad
+{
+    static VBOScreenQuad *screenQuad = nil;
+    if (!screenQuad) {
+        screenQuad = [VBOScreenQuad new];
+    }
+    return screenQuad;
+}
+
 @end

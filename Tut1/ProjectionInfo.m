@@ -37,26 +37,34 @@
 
 - (void)setFovy:(float)fovy
 {
-    _fovy = fovy;
-    self.changed = YES;
+    if (_fovy != fovy) {
+        _fovy = fovy;
+        self.changed = YES;
+    }
 }
 
 - (void)setAspect:(float)aspect
 {
-    _aspect = aspect;
-    self.changed = YES;
+    if (_aspect != aspect) {
+        _aspect = aspect;
+        self.changed = YES;
+    }
 }
 
 - (void)setNearZ:(float)nearZ
 {
-    _nearZ = nearZ;
-    self.changed = YES;
+    if (_nearZ != nearZ) {
+        _nearZ = nearZ;
+        self.changed = YES;
+    }
 }
 
 - (void)setFarZ:(float)farZ
 {
-    _farZ = farZ;
-    self.changed = YES;
+    if (_farZ != farZ) {
+        _farZ = farZ;
+        self.changed = YES;
+    }
 }
 
 - (GLKMatrix4)matrix

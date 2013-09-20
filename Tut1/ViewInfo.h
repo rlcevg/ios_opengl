@@ -15,5 +15,6 @@
 @property (assign, nonatomic) GLKVector3 center;
 @property (assign, nonatomic) GLKVector3 up;
 @property (assign, nonatomic) GLKMatrix4 matrix;
+@property (assign, nonatomic, getter=isChanged, readonly) BOOL changed;
 
 @end

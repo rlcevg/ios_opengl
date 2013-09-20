@@ -20,12 +20,12 @@ typedef enum KernelTaps {
 
 @interface GLSLBlur : NSObject
 
-- (id)initWithKernelTaps:(KernelTaps)kernelTaps strength:(double)strength scale:(double)scale;
+- (id)initWithKernelTaps:(KernelTaps)kernelTaps strength:(float)strength scale:(float)scale;
 - (void)use;
 - (void)setTexelSize:(GLKVector2)texelSize;
 
-@property (nonatomic, assign) KernelTaps kernelTaps;
-@property (nonatomic, assign) double strength;
-@property (nonatomic, assign) double scale;
+@property (assign, nonatomic) KernelTaps kernelTaps;
+@property (assign, nonatomic) float strength;
+@property (assign, nonatomic) float scale;
 
 @end

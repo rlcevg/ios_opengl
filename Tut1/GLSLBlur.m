@@ -26,10 +26,10 @@
 
 - (id)init
 {
-    return [self initWithKernelTaps:KT_17 strength:0.3 scale:1.0];
+    return [self initWithKernelTaps:KT_17 strength:0.2 scale:1.0];
 }
 
-- (id)initWithKernelTaps:(KernelTaps)kernelTaps strength:(double)strength scale:(double)scale
+- (id)initWithKernelTaps:(KernelTaps)kernelTaps strength:(float)strength scale:(float)scale
 {
     if (self = [super init]) {
         _kernelTaps = kernelTaps;
@@ -84,7 +84,7 @@
     }
 }
 
-- (void)setStrength:(double)strength
+- (void)setStrength:(float)strength
 {
     if (_strength != strength) {
         _strength = strength;
@@ -93,7 +93,7 @@
     }
 }
 
-- (void)setScale:(double)scale
+- (void)setScale:(float)scale
 {
     if (_scale != scale) {
         for (int i = 0; i < self.capacity - 1; ++i) {
@@ -111,19 +111,19 @@
     self.weights = (GLfloat *)malloc(sizeof(GLfloat) * capacity);
 
     NSUInteger discreteCapacity = (self.kernelTaps >> 1) + 1;
-    double *discreteWeights = (double *)malloc(sizeof(double) * discreteCapacity);
+    float *discreteWeights = (float *)malloc(sizeof(float) * discreteCapacity);
 
-    double strength = 1.0 - self.strength;
-    double deviation = self.kernelTaps * 0.5 * 0.35;
+    float strength = 1.0 - self.strength;
+    float deviation = self.kernelTaps * 0.5 * 0.35;
     for (int i = 0; i < discreteCapacity; ++i) {
-        discreteWeights[i] = [GLSLBlur gaussianX:(double)i * strength deviation:deviation];
+        discreteWeights[i] = [GLSLBlur gaussianX:(float)i * strength deviation:deviation];
     }
 
     self.weights[0] = discreteWeights[0];
     for (int i = 1; i < capacity; ++i) {
-        double weight = discreteWeights[i * 2] + discreteWeights[i * 2 - 1];
+        float weight = discreteWeights[i * 2] + discreteWeights[i * 2 - 1];
         self.weights[i] = weight;
-        double offset = discreteWeights[i * 2] / weight + (i * 2 - 1);
+        float offset = discreteWeights[i * 2] / weight + (i * 2 - 1);
         self.offsets[i - 1] = offset * self.scale;
     }
 
@@ -140,12 +140,12 @@
 
 - (void)setTexelSize:(GLKVector2)texelSize;
 {
-    [self.program setUniform:"scale" vec2:texelSize];
+    [self.program setUniform:"texelSize" vec2:texelSize];
 }
 
-+ (double)gaussianX:(double)x deviation:(double)deviation
++ (float)gaussianX:(float)x deviation:(float)deviation
 {
-    return exp(-((x * x) / (2.0 * deviation * deviation))) / (deviation * sqrt(2.0 * M_PI));
+    return expf(-((x * x) / (2.0 * deviation * deviation))) / (deviation * sqrtf(2.0 * M_PI));
 }
 
 @end

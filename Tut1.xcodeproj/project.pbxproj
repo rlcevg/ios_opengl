@@ -38,6 +38,7 @@
 		3E61F3401716D72900FA7C64 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E61F3131716D72900FA7C64 /* Foundation.framework */; };
 		3E61F3481716D72900FA7C64 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3E61F3461716D72900FA7C64 /* InfoPlist.strings */; };
 		3E61F34B1716D72900FA7C64 /* Tut1Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E61F34A1716D72900FA7C64 /* Tut1Tests.m */; };
+		3E6F90F917EB4FD200B0D280 /* VAOQuad.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E6F90F817EB4FD200B0D280 /* VAOQuad.m */; };
 		3E98BFBD171C9C8A00C963E3 /* GLSLProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E98BFBC171C9C8A00C963E3 /* GLSLProgram.m */; };
 		3E9ECBAF171D841E002DAB1E /* Shadow.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3E9ECBAE171D841E002DAB1E /* Shadow.fsh */; };
 		3E9ECBB2171D88EC002DAB1E /* Shadow.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3E9ECBB0171D858C002DAB1E /* Shadow.vsh */; };
@@ -61,8 +62,8 @@
 		3EB41E2E17DD025100921428 /* FBOCaptureNone.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EB41E2D17DD025100921428 /* FBOCaptureNone.m */; };
 		3EBC8D1B173913CF00E5DC93 /* BloomHigh.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EBC8D18173913A500E5DC93 /* BloomHigh.fsh */; };
 		3EBC8D1C173913D300E5DC93 /* BloomHigh.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EBC8D1A173913BC00E5DC93 /* BloomHigh.vsh */; };
-		3EBC8D1F17395AFA00E5DC93 /* BloomCombine5.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EBC8D1E173956DE00E5DC93 /* BloomCombine5.fsh */; };
-		3EBC8D2017395AFD00E5DC93 /* BloomCombine5.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EBC8D1D173956C900E5DC93 /* BloomCombine5.vsh */; };
+		3EBC8D1F17395AFA00E5DC93 /* BloomCombine4.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EBC8D1E173956DE00E5DC93 /* BloomCombine4.fsh */; };
+		3EBC8D2017395AFD00E5DC93 /* BloomCombine4.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EBC8D1D173956C900E5DC93 /* BloomCombine4.vsh */; };
 		3EC0A8C1172D8AE800618EA1 /* common.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EC0A8BD172D86F300618EA1 /* common.vsh */; };
 		3EC0A8C2172D8AED00618EA1 /* common.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 3EC0A8BF172D87D900618EA1 /* common.fsh */; };
 		3ECB663217E8C6C800D45CF7 /* backsp9.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3ECB662C17E8C6BD00D45CF7 /* backsp9.jpg */; };
@@ -141,6 +142,8 @@
 		3E61F3471716D72900FA7C64 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3E61F3491716D72900FA7C64 /* Tut1Tests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tut1Tests.h; sourceTree = "<group>"; };
 		3E61F34A1716D72900FA7C64 /* Tut1Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tut1Tests.m; sourceTree = "<group>"; };
+		3E6F90F717EB4FD200B0D280 /* VAOQuad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VAOQuad.h; sourceTree = "<group>"; };
+		3E6F90F817EB4FD200B0D280 /* VAOQuad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VAOQuad.m; sourceTree = "<group>"; };
 		3E98BFBB171C9C8A00C963E3 /* GLSLProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLSLProgram.h; sourceTree = "<group>"; };
 		3E98BFBC171C9C8A00C963E3 /* GLSLProgram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLSLProgram.m; sourceTree = "<group>"; };
 		3E9ECBAE171D841E002DAB1E /* Shadow.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Shadow.fsh; path = Shaders/Shadow.fsh; sourceTree = "<group>"; };
@@ -171,8 +174,8 @@
 		3EB41E2D17DD025100921428 /* FBOCaptureNone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FBOCaptureNone.m; sourceTree = "<group>"; };
 		3EBC8D18173913A500E5DC93 /* BloomHigh.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = BloomHigh.fsh; path = Shaders/BloomHigh.fsh; sourceTree = "<group>"; };
 		3EBC8D1A173913BC00E5DC93 /* BloomHigh.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BloomHigh.vsh; path = Shaders/BloomHigh.vsh; sourceTree = "<group>"; };
-		3EBC8D1D173956C900E5DC93 /* BloomCombine5.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BloomCombine5.vsh; path = Shaders/BloomCombine5.vsh; sourceTree = "<group>"; };
-		3EBC8D1E173956DE00E5DC93 /* BloomCombine5.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BloomCombine5.fsh; path = Shaders/BloomCombine5.fsh; sourceTree = "<group>"; };
+		3EBC8D1D173956C900E5DC93 /* BloomCombine4.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BloomCombine4.vsh; path = Shaders/BloomCombine4.vsh; sourceTree = "<group>"; };
+		3EBC8D1E173956DE00E5DC93 /* BloomCombine4.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BloomCombine4.fsh; path = Shaders/BloomCombine4.fsh; sourceTree = "<group>"; };
 		3EC0A8BD172D86F300618EA1 /* common.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = common.vsh; path = Shaders/common.vsh; sourceTree = "<group>"; };
 		3EC0A8BF172D87D900618EA1 /* common.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = common.fsh; path = Shaders/common.fsh; sourceTree = "<group>"; };
 		3ECB662A17E8C4AF00D45CF7 /* texture1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = texture1.jpg; path = Images/texture1.jpg; sourceTree = "<group>"; };
@@ -235,8 +238,8 @@
 				3EDED416173427E900197E64 /* BlurBox5.fsh */,
 				3EBC8D1A173913BC00E5DC93 /* BloomHigh.vsh */,
 				3EBC8D18173913A500E5DC93 /* BloomHigh.fsh */,
-				3EBC8D1D173956C900E5DC93 /* BloomCombine5.vsh */,
-				3EBC8D1E173956DE00E5DC93 /* BloomCombine5.fsh */,
+				3EBC8D1D173956C900E5DC93 /* BloomCombine4.vsh */,
+				3EBC8D1E173956DE00E5DC93 /* BloomCombine4.fsh */,
 				3E9FA53917E71BDE008CB314 /* BlurGaussian5.vsh */,
 				3E9FA53B17E71BF8008CB314 /* BlurGaussian5.fsh */,
 				3E9FA53D17E71C57008CB314 /* BlurGaussian9.vsh */,
@@ -307,6 +310,8 @@
 				3E5B5B61171B19F600DFFD87 /* VBOTorus.m */,
 				3ED7E0761735A56000E2E4A7 /* VBOScreenQuad.h */,
 				3ED7E0771735A56000E2E4A7 /* VBOScreenQuad.m */,
+				3E6F90F717EB4FD200B0D280 /* VAOQuad.h */,
+				3E6F90F817EB4FD200B0D280 /* VAOQuad.m */,
 				3EA1F7D01738049900FEC22E /* VBOCylinder.h */,
 				3EA1F7D11738049900FEC22E /* VBOCylinder.m */,
 				3E98BFBB171C9C8A00C963E3 /* GLSLProgram.h */,
@@ -478,8 +483,8 @@
 				3E9FA55017E728F1008CB314 /* BlurGaussian21.fsh in Resources */,
 				3E9FA55117E728F1008CB314 /* BlurGaussian25.vsh in Resources */,
 				3E9FA55217E728F1008CB314 /* BlurGaussian25.fsh in Resources */,
-				3EBC8D2017395AFD00E5DC93 /* BloomCombine5.vsh in Resources */,
-				3EBC8D1F17395AFA00E5DC93 /* BloomCombine5.fsh in Resources */,
+				3EBC8D2017395AFD00E5DC93 /* BloomCombine4.vsh in Resources */,
+				3EBC8D1F17395AFA00E5DC93 /* BloomCombine4.fsh in Resources */,
 				3EBC8D1C173913D300E5DC93 /* BloomHigh.vsh in Resources */,
 				3EBC8D1B173913CF00E5DC93 /* BloomHigh.fsh in Resources */,
 				3EDED4191734551A00197E64 /* BlurBox5.vsh in Resources */,
@@ -555,6 +560,7 @@
 				3EB41E2B17DCE79800921428 /* FBOCapture.m in Sources */,
 				3EB41E2E17DD025100921428 /* FBOCaptureNone.m in Sources */,
 				3E9FA55517E72937008CB314 /* GLSLBlur.m in Sources */,
+				3E6F90F917EB4FD200B0D280 /* VAOQuad.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -666,7 +672,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Tut1/Tut1-Prefix.pch";
 				INFOPLIST_FILE = "Tut1/Tut1-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos6.1;
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -678,7 +686,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Tut1/Tut1-Prefix.pch";
 				INFOPLIST_FILE = "Tut1/Tut1-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos6.1;
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
