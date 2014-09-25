@@ -17,6 +17,7 @@
 #import "SceneEffect.h"
 #import "FBOCapture.h"
 #import "FBOBloom.h"
+#import <OpenGLES/ES3/gl.h>
 
 //#ifdef DEBUG
 //#import "VBOScreenQuad.h"
@@ -57,7 +58,7 @@
 {
     [super viewDidLoad];
     
-    self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+    self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
 
     if (!self.context) {
         NSLog(@"Failed to create ES context");
@@ -104,10 +105,17 @@
     [EAGLContext setCurrentContext:self.context];
 
 #ifdef DEBUG
-    NSString *extensionString = [NSString stringWithUTF8String:(char *)glGetString(GL_EXTENSIONS)];
-    NSArray *extensions = [extensionString componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    for (NSString *oneExtension in extensions)
-        NSLog(@"%@", oneExtension);
+//    NSString *extensionString = [NSString stringWithUTF8String:(char *)glGetString(GL_EXTENSIONS)];
+//    NSArray *extensions = [extensionString componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+//    for (NSString *oneExtension in extensions) {
+//        NSLog(@"%@", oneExtension);
+//    }
+
+    int max = 0;
+    glGetIntegerv(GL_NUM_EXTENSIONS, &max);
+    for (int i = 0; i < max; i++) {
+        NSLog(@"%s", glGetStringi(GL_EXTENSIONS, i));
+    }
 #endif
 
     NSArray *cubeMapFileNames = [NSArray arrayWithObjects:
@@ -144,12 +152,12 @@
     };
     self.teapot = [[VBOTeapot alloc] initWithGrid:14 lidTransfrom:GLKMatrix4Identity];
     self.teapot.material = material;
-    self.teapot.constantColor = GLKVector3Make(0.7f, 0.8f, 0.2f);
+    self.teapot.constColor = GLKVector3Make(0.7f, 0.8f, 0.2f);
     self.floor = [VBOFloor new];
     material.Ks = GLKVector3Make(0.2f, 0.2f, 0.2f);
     material.shininess = 10.0f;
     self.floor.material = material;
-    self.floor.constantColor = GLKVector3Make(0.8f, 0.8f, 0.8f);
+    self.floor.constColor = GLKVector3Make(0.8f, 0.8f, 0.8f);
     self.torus = [VBOTorus new];
     material.Ks = GLKVector3Make(5.5f, 7.5f, 9.5f);
     material.Ke = GLKVector3Make(0.1f, 0.1f, 0.3f);
@@ -290,11 +298,20 @@
 
 //    glUseProgram(0);
 
-    CFTimeInterval frameDuration = CFAbsoluteTimeGetCurrent() - previousTimestamp;
-    if (self.framesDisplayed % 20 == 0) {
-        self.labelFPS.text = [NSString stringWithFormat:@"%f", 1 / frameDuration];
+//    glFinish();
+    CFTimeInterval curTime = CFAbsoluteTimeGetCurrent();
+    CFTimeInterval frameDuration = curTime - previousTimestamp;
+    static CFTimeInterval totalDuration = 0;
+    static unsigned totalFrames = 0;
+    static CFTimeInterval lastTime = 0;
+    totalDuration += frameDuration;
+    totalFrames++;
+    if (curTime - lastTime > 2.0) {
+        self.labelFPS.text = [NSString stringWithFormat:@"%.2f", totalFrames / totalDuration];
+        lastTime = curTime;
+        totalDuration = 0;
+        totalFrames = 0;
     }
-    self.labelFPS2.text = [NSString stringWithFormat:@"%d", self.framesPerSecond];
 }
 
 - (void)renderWith:(id<Effect>)effect

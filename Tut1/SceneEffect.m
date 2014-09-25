@@ -135,8 +135,8 @@
         [program setUniform:"modelViewProjectionMatrix" mat4:modelViewProjectionMatrix];
     }
 
-    if ([object respondsToSelector:@selector(constantColor)]) {
-        GLKVector3 color = [object constantColor];
+    if ([object respondsToSelector:@selector(constColor)]) {
+        GLKVector3 color = [object constColor];
         glVertexAttrib3fv(GLKVertexAttribColor, (const GLfloat *)&color);
     }
 

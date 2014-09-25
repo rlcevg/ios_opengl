@@ -33,7 +33,7 @@
         Vertex frontRearCircle[40];
         float radius = 0.1;
         for (int i = 0; i < 20; i++) {
-            float angle = 2*M_PI/20.0 * i;
+            float angle = 2 * M_PI/20.0 * i;
             frontRearCircle[i].vert = GLKVector3Make(radius * cos(angle), radius * sin(angle), 4.0);
             frontRearCircle[i].norm = GLKVector3Make(cos(angle), sin(angle), 0.0);
             frontRearCircle[i+20].vert = frontRearCircle[i].vert;
@@ -42,23 +42,23 @@
         }
 
         GLuint side[6 * 20];
-        for (int i = 0; i < 19; i++) {
-            side[i*6] = 20+i;
-            side[i*6+1] = i+1;
-            side[i*6+2] = i;
+        for (GLuint i = 0; i < 19; i++) {
+            side[i * 6 + 0] = 20 + i;
+            side[i * 6 + 1] = i + 1;
+            side[i * 6 + 2] = i;
 
-            side[i*6+3] = 20+i;
-            side[i*6+4] = 20+i+1;
-            side[i*6+5] = i+1;
+            side[i * 6 + 3] = 20 + i;
+            side[i * 6 + 4] = 20 + i + 1;
+            side[i * 6 + 5] = i + 1;
         }
-        int i = 19;
-        side[i*6] = 20+i;
-        side[i*6+1] = 0;
-        side[i*6+2] = i;
+        GLuint i = 19;
+        side[i * 6 + 0] = 20 + i;
+        side[i * 6 + 1] = 0;
+        side[i * 6 + 2] = i;
 
-        side[i*6+3] = 20+i;
-        side[i*6+4] = 20;
-        side[i*6+5] = 0;
+        side[i * 6 + 3] = 20 + i;
+        side[i * 6 + 4] = 20;
+        side[i * 6 + 5] = 0;
 
         glGenVertexArraysOES(1, &_vertexArray);
         glBindVertexArrayOES(_vertexArray);

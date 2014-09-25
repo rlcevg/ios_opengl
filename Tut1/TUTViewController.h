@@ -14,7 +14,6 @@
 @property (weak, nonatomic) IBOutlet UISwitch *bloomSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *msaaSwitch;
 @property (weak, nonatomic) IBOutlet UILabel *labelFPS;
-@property (weak, nonatomic) IBOutlet UILabel *labelFPS2;
 - (IBAction)handleTap:(UITapGestureRecognizer *)sender;
 - (IBAction)handlePan:(UIPanGestureRecognizer *)sender;
 - (IBAction)switchMSAA:(UISwitch *)sender;

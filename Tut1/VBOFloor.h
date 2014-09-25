@@ -14,6 +14,6 @@
 - (void)render;
 
 @property (strong, nonatomic, readonly) GLKTextureInfo *texture;
-@property (assign, nonatomic) GLKVector3 constantColor;
+@property (assign, nonatomic) GLKVector3 constColor;
 
 @end

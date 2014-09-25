@@ -9,6 +9,7 @@
 #import "VBOTorus.h"
 #import "Utils.h"
 #import <GLKit/GLKit.h>
+#import <OpenGLES/ES3/gl.h>
 
 typedef struct {
     GLKVector3 position;
@@ -22,13 +23,15 @@ void generateVertexData(Vertex *vertices, int sides, int rings,
 
 @interface VBOTorus () {
     GLuint _vaoHandle;
-    GLuint _handle[4];
+    GLuint _handle[6];
     unsigned int _faces;
 
     int _sides;
     int _rings;
     float _outerRadius;
     float _innerRadius;
+
+    int _bufferID;
 }
 
 @end
@@ -45,12 +48,13 @@ void generateVertexData(Vertex *vertices, int sides, int rings,
 - (id)initWithOuterRadius:(float)outerRadius innerRadius:(float)innerRadius nsides:(int) nsides nrings:(int) nrings
 {
     if (self = [super init]) {
+        _bufferID = 2;
         _sides = nsides;
         _rings = nrings;
         _outerRadius = outerRadius;
         _innerRadius = innerRadius;
         _faces = nsides * nrings;
-        int nVerts  = nsides * (nrings+1);   // One extra ring to duplicate first ring
+        int nVerts  = nsides * (nrings + 1);   // One extra ring to duplicate first ring
 
         // Verts and Normals
         Vertex *vertices = (Vertex *)malloc(sizeof(Vertex) * nVerts);
@@ -66,33 +70,33 @@ void generateVertexData(Vertex *vertices, int sides, int rings,
                     innerRadius:innerRadius sides:nsides rings:nrings];
 
         // Create the VAO
-        glGenVertexArraysOES(1, &_vaoHandle);
-        glBindVertexArrayOES(_vaoHandle);
+        glGenVertexArrays(1, &_vaoHandle);
+        glBindVertexArray(_vaoHandle);
 
         // Create and populate the buffer objects
-        glGenBuffers(4, _handle);
+        glGenBuffers(6, _handle);
 
-        glBindBuffer(GL_ARRAY_BUFFER, _handle[0]);
-        glBufferData(GL_ARRAY_BUFFER, nVerts * sizeof(Vertex), vertices, GL_DYNAMIC_DRAW);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid *)offsetof(Vertex, position));
+        for (int i = 0; i < 3; ++i) {
+            glBindBuffer(GL_ARRAY_BUFFER, _handle[i]);
+            glBufferData(GL_ARRAY_BUFFER, nVerts * sizeof(Vertex), vertices, GL_DYNAMIC_DRAW);
+        }
         glEnableVertexAttribArray(GLKVertexAttribPosition);  // Vertex position
-        glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid *)offsetof(Vertex, normal));
         glEnableVertexAttribArray(GLKVertexAttribNormal);  // Vertex normal
 
-        glBindBuffer(GL_ARRAY_BUFFER, _handle[1]);
+        glBindBuffer(GL_ARRAY_BUFFER, _handle[3]);
         glBufferData(GL_ARRAY_BUFFER, (4 * nVerts) * sizeof(GLfloat), c, GL_STATIC_DRAW);
         glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
         glEnableVertexAttribArray(GLKVertexAttribColor);  // Vertex color
 
-        glBindBuffer(GL_ARRAY_BUFFER, _handle[2]);
+        glBindBuffer(GL_ARRAY_BUFFER, _handle[4]);
         glBufferData(GL_ARRAY_BUFFER, (2 * nVerts) * sizeof(GLfloat), tex, GL_STATIC_DRAW);
         glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
         glEnableVertexAttribArray(GLKVertexAttribTexCoord0);  // Texture coords
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _handle[3]);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _handle[5]);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * _faces * sizeof(GLuint), el, GL_STATIC_DRAW);
 
-        glBindVertexArrayOES(0);
+        glBindVertexArray(0);
         
         free(vertices);
         free(c);
@@ -104,24 +108,29 @@ void generateVertexData(Vertex *vertices, int sides, int rings,
 
 - (void)dealloc
 {
-	glDeleteBuffers(4, _handle);
-	glDeleteVertexArraysOES(1, &_vaoHandle);
+    glDeleteBuffers(6, _handle);
+    glDeleteVertexArrays(1, &_vaoHandle);
 }
 
 - (void)updateWithTime:(float)time
 {
-    glBindBuffer(GL_ARRAY_BUFFER, _handle[0]);
-    Vertex *vertices = (Vertex *)glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES);
+    if (++_bufferID > 2) {
+        _bufferID = 0;
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, _handle[_bufferID]);
+//    Vertex *vertices = (Vertex *)glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES);
+    Vertex *vertices = (Vertex *)glMapBufferRange(GL_ARRAY_BUFFER, 0, 0, GL_MAP_WRITE_BIT_EXT);
     generateVertexData(vertices, _sides, _rings, _outerRadius, _innerRadius, time);
-    glUnmapBufferOES(GL_ARRAY_BUFFER);
+    glUnmapBuffer(GL_ARRAY_BUFFER);
 }
 
 - (void)render
 {
-    glDisable(GL_TEXTURE_2D);
-    glBindVertexArrayOES(_vaoHandle);
+    glBindVertexArray(_vaoHandle);
+    glBindBuffer(GL_ARRAY_BUFFER, _handle[(_bufferID + 1) % 3]);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid *)offsetof(Vertex, position));
+    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid *)offsetof(Vertex, normal));
     glDrawElements(GL_TRIANGLES, 6 * _faces, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
-    glEnable(GL_TEXTURE_2D);
 }
 
 + (void)generateVerts:(Vertex *)verts colors:(GLfloat *)colors
@@ -168,10 +177,10 @@ void generateVertexData(Vertex *vertices, int sides, int rings,
     }
 
     int idx = 0;
-    for (int ring = 0; ring < rings; ring++) {
+    for (GLuint ring = 0; ring < rings; ring++) {
         int ringStart = ring * sides;
         int nextRingStart = (ring + 1) * sides;
-        for (int side = 0; side < sides; side++) {
+        for (GLuint side = 0; side < sides; side++) {
             int nextSide = (side + 1) % sides;
             // The quad
             el[idx] = (ringStart + side);

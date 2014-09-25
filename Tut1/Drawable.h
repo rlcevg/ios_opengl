@@ -27,7 +27,7 @@ typedef struct {
 @optional
 
 - (void)update:(float)time;
-- (GLKVector3)constantColor;
+- (GLKVector3)constColor;
 - (GLKTextureInfo *)texture;
 
 @end

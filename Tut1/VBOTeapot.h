@@ -13,6 +13,6 @@
 - (id)initWithGrid:(int)grid lidTransfrom:(GLKMatrix4)lidTransform;
 - (void)render;
 
-@property (assign, nonatomic) GLKVector3 constantColor;
+@property (assign, nonatomic) GLKVector3 constColor;
 
 @end

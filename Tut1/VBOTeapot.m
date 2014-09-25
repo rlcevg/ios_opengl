@@ -388,11 +388,11 @@ void buildPatch(GLKVector3 patch[][4],
         }
     }
 
-    for (int i = 0; i < grid; i++)
+    for (GLuint i = 0; i < grid; i++)
     {
         int iStart = i * (grid+1) + startIndex;
         int nextiStart = (i+1) * (grid+1) + startIndex;
-        for (int j = 0; j < grid; j++)
+        for (GLuint j = 0; j < grid; j++)
         {
             elIdx = *elIndex;
             el[elIdx] = iStart + j;

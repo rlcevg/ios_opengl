@@ -193,7 +193,7 @@ typedef void (*GLLogFunction)(GLuint program, GLsizei bufsize, GLsizei* length, 
     glGetShaderiv(shaderHandle, GL_COMPILE_STATUS, &status);
     if (GL_FALSE == status) {
 #if defined(DEBUG)
-        GLint logLength;
+        GLsizei logLength;
         glGetShaderiv(shaderHandle, GL_INFO_LOG_LENGTH, &logLength);
         if (logLength > 0) {
             GLchar *log = (GLchar *)malloc(logLength);

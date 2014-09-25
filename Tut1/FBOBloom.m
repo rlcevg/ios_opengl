@@ -40,7 +40,7 @@
 
 - (id)initWithCaptureFramebuffer:(FBOCapture *)capture
 {
-    return [self initWithWidth:256 height:256 captureFramebuffer:capture];
+    return [self initWithWidth:256 height:128 captureFramebuffer:capture];
 }
 
 - (id)initWithWidth:(GLsizei)width height:(GLsizei)height captureFramebuffer:(FBOCapture *)capture
