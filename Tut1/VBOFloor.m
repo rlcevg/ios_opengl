@@ -9,6 +9,7 @@
 #import "VBOFloor.h"
 #import "Utils.h"
 #import <GLKit/GLKit.h>
+#import <OpenGLES/ES2/glext.h>
 
 typedef struct {
     GLKVector3 position;

@@ -8,6 +8,7 @@
 
 #import "VBOCylinder.h"
 #import "Utils.h"
+#import <OpenGLES/ES2/glext.h>
 
 #pragma mark
 

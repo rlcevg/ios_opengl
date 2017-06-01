@@ -8,6 +8,7 @@
 
 #import "VBOTeapot.h"
 #import "Utils.h"
+#import <OpenGLES/ES2/glext.h>
 
 static const int Teapot_patchdata[][16] =
 {

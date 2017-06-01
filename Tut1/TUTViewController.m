@@ -17,7 +17,7 @@
 #import "SceneEffect.h"
 #import "FBOCapture.h"
 #import "FBOBloom.h"
-#import <OpenGLES/ES3/gl.h>
+#import <OpenGLES/ES2/glext.h>
 
 //#ifdef DEBUG
 //#import "VBOScreenQuad.h"
@@ -58,7 +58,7 @@
 {
     [super viewDidLoad];
     
-    self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
+    self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 
     if (!self.context) {
         NSLog(@"Failed to create ES context");
@@ -105,17 +105,18 @@
     [EAGLContext setCurrentContext:self.context];
 
 #ifdef DEBUG
-//    NSString *extensionString = [NSString stringWithUTF8String:(char *)glGetString(GL_EXTENSIONS)];
-//    NSArray *extensions = [extensionString componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-//    for (NSString *oneExtension in extensions) {
-//        NSLog(@"%@", oneExtension);
-//    }
-
-    int max = 0;
-    glGetIntegerv(GL_NUM_EXTENSIONS, &max);
-    for (int i = 0; i < max; i++) {
-        NSLog(@"%s", glGetStringi(GL_EXTENSIONS, i));
+    NSString *extensionString = [NSString stringWithUTF8String:(char *)glGetString(GL_EXTENSIONS)];
+    NSArray *extensions = [extensionString componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    for (NSString *oneExtension in extensions) {
+        NSLog(@"%@", oneExtension);
     }
+
+    // NOTE: ES3+ only
+//    int max = 0;
+//    glGetIntegerv(GL_NUM_EXTENSIONS, &max);
+//    for (int i = 0; i < max; i++) {
+//        NSLog(@"%s", glGetStringi(GL_EXTENSIONS, i));
+//    }
 #endif
 
     NSArray *cubeMapFileNames = [NSArray arrayWithObjects:

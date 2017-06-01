@@ -10,7 +10,7 @@
 #import "GLSLProgram.h"
 #import "Light.h"
 #import "VBOScreenQuad.h"
-#import <OpenGLES/ES3/gl.h>
+#import <OpenGLES/ES2/glext.h>
 
 #define N_FBOS 2
 //#define N_TEXTURES 3
@@ -60,18 +60,18 @@
         _target = GL_TEXTURE_2D;
 
         glGenTextures(N_TEXTURES, _textures);
-        NSLog(@"%x", glGetError());
+        NSLog(@"0: %x", glGetError());
         glGenFramebuffers(N_FBOS, _fbos);
-        NSLog(@"%x", glGetError());
+        NSLog(@"1: %x", glGetError());
 
         // Create depth renderbuffer
         glGenRenderbuffers(1, &_rboDepth);
-        NSLog(@"%x", glGetError());
+        NSLog(@"2: %x", glGetError());
         glBindRenderbuffer(GL_RENDERBUFFER, _rboDepth);
-        NSLog(@"%x", glGetError());
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+        NSLog(@"3: %x", glGetError());
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24_OES, width, height);
 
-        NSLog(@"%x", glGetError());
+        NSLog(@"4: %x", glGetError());
 
         // Create depth data texture
         glBindTexture(GL_TEXTURE_2D, _textures[DEPTH_DATA_TEX]);
@@ -79,12 +79,12 @@
 //        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        NSLog(@"%x", glGetError());
+        NSLog(@"5: %x", glGetError());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        NSLog(@"%x", glGetError());
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_EXT, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
-
-        NSLog(@"%x", glGetError());
+        NSLog(@"6: %x", glGetError());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_HALF_FLOAT_OES, NULL);
+//        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_EXT, width, height, 0, GL_RGBA, GL_FLOAT, NULL);  // NOTE: ES3+ only
+        NSLog(@"7: %x", glGetError());
 
 //        GLuint rboColor;
 //        glGenRenderbuffers(1, &rboColor);
@@ -95,10 +95,10 @@
         // Create and set up the depth FBO
         glBindFramebuffer(GL_FRAMEBUFFER, _fbos[SHADOW_FBO]);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _rboDepth);
-        NSLog(@"%x", glGetError());
+        NSLog(@"8: %x", glGetError());
 //        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, rboColor);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textures[DEPTH_DATA_TEX], 0);
-        NSLog(@"%x", glGetError());
+        NSLog(@"9: %x", glGetError());
 
         GLenum fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
@@ -116,7 +116,8 @@
         GLfloat fLargest;
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &fLargest);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, fLargest);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_EXT, width >> BLUR_COEF, height >> BLUR_COEF, 0, GL_RGBA, GL_FLOAT, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width >> BLUR_COEF, height >> BLUR_COEF, 0, GL_RGBA, GL_HALF_FLOAT_OES, 0);
+//        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_EXT, width >> BLUR_COEF, height >> BLUR_COEF, 0, GL_RGBA, GL_FLOAT, 0);  // NOTE: ES3+ only
 
         // Creating the blurred FBO
         glBindFramebuffer(GL_FRAMEBUFFER, _fbos[BLUR_FBO]);

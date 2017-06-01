@@ -442,7 +442,7 @@
 				ORGANIZATIONNAME = Evgenij;
 				TargetAttributes = {
 					3E61F30D1716D72900FA7C64 = {
-						DevelopmentTeam = 7VDLKCUQU4;
+						DevelopmentTeam = SHAV3DCY2C;
 					};
 				};
 			};
@@ -675,10 +675,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = SHAV3DCY2C;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Tut1/Tut1-Prefix.pch";
 				INFOPLIST_FILE = "Tut1/Tut1-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Tutor1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -690,10 +692,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = SHAV3DCY2C;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Tut1/Tut1-Prefix.pch";
 				INFOPLIST_FILE = "Tut1/Tut1-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Tutor1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;

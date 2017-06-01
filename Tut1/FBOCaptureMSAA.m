@@ -7,6 +7,7 @@
 //
 
 #import "FBOCaptureMSAA.h"
+#import <OpenGLES/ES2/glext.h>
 
 #define N_FBOS 2
 #define N_RBOS 2

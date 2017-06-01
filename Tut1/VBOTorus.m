@@ -9,7 +9,7 @@
 #import "VBOTorus.h"
 #import "Utils.h"
 #import <GLKit/GLKit.h>
-#import <OpenGLES/ES3/gl.h>
+#import <OpenGLES/ES2/glext.h>
 
 typedef struct {
     GLKVector3 position;
@@ -70,8 +70,8 @@ void generateVertexData(Vertex *vertices, int sides, int rings,
                     innerRadius:innerRadius sides:nsides rings:nrings];
 
         // Create the VAO
-        glGenVertexArrays(1, &_vaoHandle);
-        glBindVertexArray(_vaoHandle);
+        glGenVertexArraysOES(1, &_vaoHandle);
+        glBindVertexArrayOES(_vaoHandle);
 
         // Create and populate the buffer objects
         glGenBuffers(6, _handle);
@@ -96,7 +96,7 @@ void generateVertexData(Vertex *vertices, int sides, int rings,
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _handle[5]);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * _faces * sizeof(GLuint), el, GL_STATIC_DRAW);
 
-        glBindVertexArray(0);
+        glBindVertexArrayOES(0);
         
         free(vertices);
         free(c);
@@ -109,7 +109,7 @@ void generateVertexData(Vertex *vertices, int sides, int rings,
 - (void)dealloc
 {
     glDeleteBuffers(6, _handle);
-    glDeleteVertexArrays(1, &_vaoHandle);
+    glDeleteVertexArraysOES(1, &_vaoHandle);
 }
 
 - (void)updateWithTime:(float)time
@@ -119,14 +119,14 @@ void generateVertexData(Vertex *vertices, int sides, int rings,
     }
     glBindBuffer(GL_ARRAY_BUFFER, _handle[_bufferID]);
 //    Vertex *vertices = (Vertex *)glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES);
-    Vertex *vertices = (Vertex *)glMapBufferRange(GL_ARRAY_BUFFER, 0, 0, GL_MAP_WRITE_BIT_EXT);
+    Vertex *vertices = (Vertex *)glMapBufferRangeEXT(GL_ARRAY_BUFFER, 0, 0, GL_MAP_WRITE_BIT_EXT);
     generateVertexData(vertices, _sides, _rings, _outerRadius, _innerRadius, time);
-    glUnmapBuffer(GL_ARRAY_BUFFER);
+    glUnmapBufferOES(GL_ARRAY_BUFFER);
 }
 
 - (void)render
 {
-    glBindVertexArray(_vaoHandle);
+    glBindVertexArrayOES(_vaoHandle);
     glBindBuffer(GL_ARRAY_BUFFER, _handle[(_bufferID + 1) % 3]);
     glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid *)offsetof(Vertex, position));
     glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid *)offsetof(Vertex, normal));
